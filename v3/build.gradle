@@ -192,7 +192,15 @@ dependencies {
   interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
 
+  interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.40.v20210413")
+  interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.16")
+
+  interlokRuntime ("org.apache.activemq:activemq-client:5.16.2") {
+    exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
+  }
+
   interlokTestRuntime ("com.adaptris:interlok-service-tester:$interlokVersion") { changing=true }
+
   interlokWar  ("com.adaptris.ui:interlok:$interlokUiVersion@war") {changing=true}
 
   interlokVerify files("$interlokTmpConfigDirectory"){
@@ -473,8 +481,20 @@ dependencyCheck  {
   suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" ]
   scanConfigurations = buildDetails.isIncludeWar() ? [ "interlokWar", "interlokRuntime" ] : [ "interlokRuntime" ]
   failBuildOnCVSS = 7
+  formats = [ "HTML", "JUNIT" ]
+  analyzers {
+    assemblyEnabled=false
+  }
+}
+
+task checkInterlokVersion {
+  doLast {
+    if (interlokVersion.startsWith("4")) {
+      throw new GradleException("Interlok 4+; Switch to using 'https://raw.githubusercontent.com/adaptris/interlok-build-parent/main/v4/build.gradle' instead")
+    }
+  }
 }
 
 // check.dependsOn dependencyCheckAnalyze,interlokVerify,interlokServiceTest,interlokVersionReport
-check.dependsOn interlokVerify,interlokServiceTest,interlokVersionReport
+check.dependsOn checkInterlokVersion,interlokVerify,interlokServiceTest,interlokVersionReport
 assemble.dependsOn installDist
