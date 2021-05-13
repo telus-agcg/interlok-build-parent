@@ -483,6 +483,10 @@ dependencyCheck  {
   suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" ]
   scanConfigurations = buildDetails.isIncludeWar() ? [ "interlokWar", "interlokRuntime" ] : [ "interlokRuntime" ]
   failBuildOnCVSS = 7
+  formats = [ "HTML", "JUNIT" ]
+  analyzers {
+    assemblyEnabled=false
+  }
 }
 
 // check.dependsOn dependencyCheckAnalyze,interlokVerify,interlokServiceTest,interlokVersionReport

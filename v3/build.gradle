@@ -481,8 +481,20 @@ dependencyCheck  {
   suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" ]
   scanConfigurations = buildDetails.isIncludeWar() ? [ "interlokWar", "interlokRuntime" ] : [ "interlokRuntime" ]
   failBuildOnCVSS = 7
+  formats = [ "HTML", "JUNIT" ]
+  analyzers {
+    assemblyEnabled=false
+  }
+}
+
+task checkInterlokVersion {
+  doLast {
+    if (interlokVersion.startsWith("4")) {
+      throw new GradleException("Interlok 4+; Switch to using 'https://raw.githubusercontent.com/adaptris/interlok-build-parent/main/v4/build.gradle' instead")
+    }
+  }
 }
 
 // check.dependsOn dependencyCheckAnalyze,interlokVerify,interlokServiceTest,interlokVersionReport
-check.dependsOn interlokVerify,interlokServiceTest,interlokVersionReport
+check.dependsOn checkInterlokVersion,interlokVerify,interlokServiceTest,interlokVersionReport
 assemble.dependsOn installDist
