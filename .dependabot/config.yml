@@ -1,0 +1,21 @@
+version: 1
+
+update_configs:
+  - package_manager: "java:gradle"
+    directory: "/v4"
+    update_schedule: "daily"
+    default_reviewers:
+      - quotidian-ennui
+      - mcwarman
+      - aaron-mcgrath-adp
+      - sebastien-belin-adp
+      - higgyfella
+  - package_manager: "java:gradle"
+    directory: "/v3"
+    update_schedule: "daily"
+    default_reviewers:
+      - quotidian-ennui
+      - mcwarman
+      - aaron-mcgrath-adp
+      - sebastien-belin-adp
+      - higgyfella
