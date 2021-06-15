@@ -5,7 +5,7 @@ buildscript {
     maven { url 'https://plugins.gradle.org/m2/' }
   }
   dependencies {
-    classpath 'org.owasp:dependency-check-gradle:6.1.6'
+    classpath 'org.owasp:dependency-check-gradle:6.2.2'
   }
 }
 
@@ -188,9 +188,11 @@ dependencies {
   interlokRuntime ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
   interlokRuntime ("org.apache.logging.log4j:log4j-slf4j-impl:${log4j2Version}")
   interlokRuntime ("org.apache.logging.log4j:log4j-api:$log4j2Version")
-  interlokRuntime ("com.sun.mail:jakarta.mail:1.6.5")
+  interlokRuntime ("com.sun.mail:jakarta.mail:1.6.7")
   interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
+  // CVE-2021-29505 (4.1-SNAPSHOT is already at 1.4.17)
+  interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.17")
 
   interlokTestRuntime ("com.adaptris:interlok-service-tester:$interlokVersion") { changing=true }
   interlokWar  ("com.adaptris.ui:interlok:$interlokUiVersion@war") {changing=true}
@@ -203,7 +205,7 @@ dependencies {
 
   interlokVerifyReport("com.adaptris.labs:interlok-verify-report:2.1.0")
 
-  antJunit ("org.apache.ant:ant-junit:1.10.9")
+  antJunit ("org.apache.ant:ant-junit:1.10.10")
 }
 
 task localizeConfig(type: Copy) {
