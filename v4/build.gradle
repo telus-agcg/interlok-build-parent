@@ -168,7 +168,10 @@ repositories {
       }
     }
     if (localInterlokRepo != "unknown") {
-      maven { url "$localInterlokRepo" }
+      maven {
+        url "$localInterlokRepo"
+        allowInsecureProtocol true
+      }
     }
     maven { url "${nexusBaseUrl}/nexus/content/groups/public" }
     maven { url "${nexusBaseUrl}/nexus/content/groups/interlok" }
