@@ -16,7 +16,7 @@ ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.14.1'
-  slf4jVersion='1.7.30'
+  slf4jVersion='1.7.31'
   interlokVersion = project.findProperty('interlokVersion') ?: '3.12.0-RELEASE'
   verifyReportConfigCheckAvailable = '3.12-SNAPSHOT'
   interlokUiVersion = project.findProperty('interlokUiVersion') ?: interlokVersion
@@ -261,7 +261,7 @@ def interlokVersionReport = tasks.register("interlokVersionReport", JavaExec) {
     workingDir = new File("${buildDir}/tmp")
     classpath = files(verifyLauncherJar.archivePath)
 
-    main = 'com.adaptris.core.management.SimpleBootstrap'
+    mainClass = 'com.adaptris.core.management.SimpleBootstrap'
     args "-version"
 }
 
@@ -283,7 +283,7 @@ def interlokVerifyLog4j= tasks.register("interlokVerifyLog4j", JavaExec) {
   }
   workingDir = new File("${buildDir}/tmp")
   classpath = files(verifyLauncherJar.archivePath)
-  main = 'com.adaptris.core.management.SimpleBootstrap'
+  mainClass = 'com.adaptris.core.management.SimpleBootstrap'
   args "-configtest"
   environment loadPropertiesFromFile(interlokVerifyEnvironmentPropertiesFile)
   environment project.hasProperty('interlokVerifyEnvironmentProperties') ? project.getProperty('interlokVerifyEnvironmentProperties') : [:]
@@ -314,7 +314,7 @@ def interlokVerifyConfigCheck= tasks.register("interlokVerifyConfigCheck", JavaE
   }
   workingDir = new File("${buildDir}/tmp")
   classpath = files(verifyLauncherJar.archivePath)
-  main = 'com.adaptris.core.management.SimpleBootstrap'
+  mainClass = 'com.adaptris.core.management.SimpleBootstrap'
   args "-configtest"
   environment loadPropertiesFromFile(interlokVerifyEnvironmentPropertiesFile)
   environment project.hasProperty('interlokVerifyEnvironmentProperties') ? project.getProperty('interlokVerifyEnvironmentProperties') : [:]
@@ -342,7 +342,7 @@ def interlokVerifyReport = tasks.register("interlokVerifyReport", JavaExec) {
     // (interlokVerifyConfigCheck.get().didWork || interlokVerifyLog4j.get().didWork) && new File(interlokVerifyTextReport).exists()
     interlokVerify.get().didWork && new File(interlokVerifyTextReport).exists()
   }
-  main = 'com.adaptris.labs.verify.CreateVerifyReport'
+  mainClass = 'com.adaptris.labs.verify.CreateVerifyReport'
   classpath = configurations.interlokVerifyReport
   args "--reportFile"
   args interlokVerifyTextReport
@@ -382,7 +382,7 @@ def interlokServiceTest = tasks.register("interlokServiceTest", JavaExec) {
     onlyIf {
       new File("$projectDir/src/test/interlok/service-test.xml").exists()
     }
-    main = 'com.adaptris.tester.runners.TestExecutor'
+    mainClass = 'com.adaptris.tester.runners.TestExecutor'
     classpath = files(serviceTesterLauncherJar.archivePath)
     args "-serviceTest"
     args "$projectDir/src/test/interlok/service-test.xml"
