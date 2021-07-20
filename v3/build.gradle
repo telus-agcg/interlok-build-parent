@@ -16,7 +16,7 @@ ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.14.1'
-  slf4jVersion='1.7.31'
+  slf4jVersion='1.7.32'
   interlokVersion = project.findProperty('interlokVersion') ?: '3.12.0-RELEASE'
   verifyReportConfigCheckAvailable = '3.12-SNAPSHOT'
   interlokUiVersion = project.findProperty('interlokUiVersion') ?: interlokVersion
@@ -189,7 +189,7 @@ dependencies {
   interlokRuntime ("org.slf4j:jul-to-slf4j:$slf4jVersion")
   interlokRuntime ("org.apache.logging.log4j:log4j-core:$log4j2Version")
   interlokRuntime ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
-  interlokRuntime ("org.apache.logging.log4j:log4j-slf4j-impl:${log4j2Version}")
+  interlokRuntime ("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
   interlokRuntime ("org.apache.logging.log4j:log4j-api:$log4j2Version")
   interlokRuntime ("com.sun.mail:jakarta.mail:1.6.7")
   interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
