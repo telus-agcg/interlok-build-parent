@@ -195,7 +195,7 @@ dependencies {
   interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
 
-  interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.42.v20210604")
+  interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.43.v20210629")
   interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.17")
 
   interlokRuntime ("org.apache.activemq:activemq-client:5.16.2") {
@@ -214,7 +214,7 @@ dependencies {
 
   interlokVerifyReport("com.adaptris.labs:interlok-verify-report:2.1.0")
 
-  antJunit ("org.apache.ant:ant-junit:1.10.10")
+  antJunit ("org.apache.ant:ant-junit:1.10.11")
 }
 
 task localizeConfig(type: Copy) {
