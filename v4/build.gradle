@@ -195,7 +195,7 @@ dependencies {
   interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
   // CVE-2021-29505 (4.1-SNAPSHOT is already at 1.4.17)
-  interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.17")
+  interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.18")
 
   interlokTestRuntime ("com.adaptris:interlok-service-tester:$interlokVersion") { changing=true }
   interlokWar  ("com.adaptris.ui:interlok:$interlokUiVersion@war") {changing=true}
