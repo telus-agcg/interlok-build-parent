@@ -17,9 +17,14 @@ ext {
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.14.1'
   slf4jVersion='1.7.32'
+  // Make interlokServiceTester an explicit version
+  // If interlokVersion == SNAPSHOT then server-tester follows snapshot, otherwise it should
+  // be pinned to it's own release.
   interlokVersion = project.findProperty('interlokVersion') ?: '4.2.0-RELEASE'
-  verifyReportConfigCheckAvailable = '3.12-SNAPSHOT'
+  interlokServiceTesterVersion = project.findProperty('interlokServiceTesterVersion') ?: '4.2.1-RELEASE'
   interlokUiVersion = project.findProperty('interlokUiVersion') ?: interlokVersion
+  verifyReportConfigCheckAvailable = '3.12-SNAPSHOT'
+
   interlokSourceConfig = "${projectDir}/src/main/interlok/config"
   interlokTmpConfigDirectory = "${buildDir}/tmp/config"
   interlokTmpLibDirectory = "${buildDir}/tmp/lib"
@@ -197,7 +202,12 @@ dependencies {
   // CVE-2021-39139 (4.2-SNAPSHOT is already at 1.4.18)
   interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.18")
 
-  interlokTestRuntime ("com.adaptris:interlok-service-tester:$interlokVersion") { changing=true }
+  if (interlokVersion.endsWith("SNAPSHOT")) {
+    interlokTestRuntime ("com.adaptris:interlok-service-tester:$interlokVersion") { changing=true }
+  } else {
+    interlokTestRuntime ("com.adaptris:interlok-service-tester:$interlokServiceTesterVersion") { changing=true }
+  }
+
   interlokWar  ("com.adaptris.ui:interlok:$interlokUiVersion@war") {changing=true}
 
   interlokVerify files("$interlokTmpConfigDirectory"){
