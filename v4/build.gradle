@@ -24,6 +24,7 @@ ext {
   interlokServiceTesterVersion = project.findProperty('interlokServiceTesterVersion') ?: '4.2.1-RELEASE'
   interlokUiVersion = project.findProperty('interlokUiVersion') ?: interlokVersion
   verifyReportConfigCheckAvailable = '3.12-SNAPSHOT'
+  requiresServiceTesterPatch = "4.2.0-RELEASE"
 
   interlokSourceConfig = "${projectDir}/src/main/interlok/config"
   interlokTmpConfigDirectory = "${buildDir}/tmp/config"
@@ -63,6 +64,10 @@ ext.buildDetails = [
 
   isIncludeWar: { ->
     return includeWar.equals("true") || buildEnv.equals("dev")
+  },
+
+  hasServiceTesterPatch: { ->
+    return VersionNumber.parse( interlokVersion ) == VersionNumber.parse( requiresServiceTesterPatch )
   }
 
 ]
@@ -202,7 +207,12 @@ dependencies {
   // CVE-2021-39139 (4.2-SNAPSHOT is already at 1.4.18)
   interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.18")
 
-  if (interlokVersion.endsWith("SNAPSHOT")) {
+  // The hasServiceTesterPatch() condition should become redundant for 4.3.0-RELEASE
+  // since dependabot should auto-upgrade to 4.3.0-RELEASE for service tester as well.
+  // Expectation is 4.1.0-RELEASE -> 4.1.0 for both interlok-core & service-tester
+  // 4.2.0-RELEASE -> interlok-core, service-tester=4.2.1-RELEASE
+  // 4.3-SNAPSHOT -> interlok-core + service-tester == 4.3-SNAPSHOT
+  if (interlokVersion.endsWith("SNAPSHOT") || !buildDetails.hasServiceTesterPatch()) {
     interlokTestRuntime ("com.adaptris:interlok-service-tester:$interlokVersion") { changing=true }
   } else {
     interlokTestRuntime ("com.adaptris:interlok-service-tester:$interlokServiceTesterVersion") { changing=true }
