@@ -214,7 +214,7 @@ dependencies {
 
   interlokVerifyReport("com.adaptris.labs:interlok-verify-report:2.1.0")
 
-  antJunit ("org.apache.ant:ant-junit:1.10.11")
+  antJunit ("org.apache.ant:ant-junit:1.10.12")
 }
 
 task localizeConfig(type: Copy) {
