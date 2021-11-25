@@ -5,12 +5,13 @@ buildscript {
     maven { url 'https://plugins.gradle.org/m2/' }
   }
   dependencies {
-    classpath 'org.owasp:dependency-check-gradle:6.3.1'
+    classpath 'org.owasp:dependency-check-gradle:6.5.0.1'
   }
 }
 
 apply plugin: org.owasp.dependencycheck.gradle.DependencyCheckPlugin
 apply plugin: "distribution"
+apply plugin: "java-library"
 
 ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
@@ -214,7 +215,7 @@ dependencies {
 
   interlokVerifyReport("com.adaptris.labs:interlok-verify-report:2.1.0")
 
-  antJunit ("org.apache.ant:ant-junit:1.10.11")
+  antJunit ("org.apache.ant:ant-junit:1.10.12")
 }
 
 task localizeConfig(type: Copy) {
