@@ -11,6 +11,7 @@ buildscript {
 
 apply plugin: org.owasp.dependencycheck.gradle.DependencyCheckPlugin
 apply plugin: "distribution"
+apply plugin: "java-library"
 
 ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
