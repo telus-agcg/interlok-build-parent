@@ -429,7 +429,7 @@ task interlokServiceTestReport {
 
       ant.junitreport(todir: "$buildDir/reports/html") {
         fileset(dir: "$buildDir/reports/unit", includes: 'TEST-*.xml')
-        report(todir: "$buildDir/reports/html", format: "frames"	)
+        report(todir: "$buildDir/reports/html", format: "frames")
       }
     }
 }
@@ -461,6 +461,7 @@ task interlokJavadocsDist(type: Copy) {
 distributions {
     main {
         contents {
+            def usedFileNames = new HashSet()
             into('') {
                 from ("src/main/interlok")
                 exclude "config"
@@ -478,7 +479,21 @@ distributions {
             into('docs/javadocs') {
               from(interlokJavadocsDist)
             }
-            rename '(.*)-[0-9]+\\..*.jar', '$1.jar'
+            // Doing: rename '(.*)-[0-9]+\\..*.jar', '$1.jar'
+            // but also add an index if a file name already exists
+            rename { filename ->
+                if (filename ==~ '(.*)\\.jar') {
+                    def name = filename.replaceFirst('(.*)-[0-9]+\\..*.jar', '$1')
+                    def extension = 'jar'
+                    filename = "${name}.${extension}"
+                    def index = 1
+                    while (!usedFileNames.add(filename)) {
+                        filename = "${name}_${index}.${extension}"
+                        index++
+                    }
+                }
+                return filename
+            }
             rename '(.*)-[0-9]+\\..*.war', '$1.war'
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         }
