@@ -26,7 +26,6 @@ updates:
     directory: "/v3"
     open-pull-requests-limit: 20
     registries:
-      - "public"
       - "interlok"
     schedule:
       interval: "daily"
