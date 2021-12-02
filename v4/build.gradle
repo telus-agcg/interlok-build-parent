@@ -482,22 +482,30 @@ distributions {
             // Doing: rename '(.*)-[0-9]+\\..*.jar', '$1.jar'
             // but also add an index if a file name already exists
             rename { filename ->
-                if (filename ==~ '(.*)\\.jar') {
-                    def name = filename.replaceFirst('(.*)-[0-9]+\\..*.jar', '$1')
-                    def extension = 'jar'
-                    filename = "${name}.${extension}"
-                    def index = 1
-                    while (!usedFileNames.add(filename)) {
-                        filename = "${name}_${index}.${extension}"
-                        index++
-                    }
-                }
-                return filename
+                return renameJarFile(filename, usedFileNames)
             }
             rename '(.*)-[0-9]+\\..*.war', '$1.war'
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         }
     }
+}
+
+def renameJarFile(filename, usedFileNames) {
+    if (filename ==~ '(.*)\\.jar') {
+        def name = filename.replaceFirst('(.*)-[0-9]+\\.(.*).jar', '$1')
+        def extension = 'jar'
+        def isJavadoc = filename ==~ '(.*)-javadoc\\.jar'
+        filename = "${name}.${extension}"
+        def index = 1
+        // At this point jars and javadoc jars can have the same name
+        // so we differentiate them with the boolean 'isJavadoc'
+        while (!usedFileNames.add(filename + " " + isJavadoc)) {
+            filename = "${name}_${index}.${extension}"
+            index++
+        }
+    }
+    
+    return filename
 }
 
 installDist {
