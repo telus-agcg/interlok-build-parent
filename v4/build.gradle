@@ -470,8 +470,18 @@ distributions {
                 from(localizeConfig)
             }
             into('lib') {
+                def libs = new HashSet()
                 from(project.configurations.interlokRuntime)
                 from(serviceTesterDist)
+                eachFile {
+                    if (!libs.add(it.sourceName)) {
+                        it.exclude()
+                    }
+                }
+            }
+            into('lib') {
+                from(serviceTesterDist)
+                filesNotMatching(project.configurations.interlokRuntime, null)
             }
             into('webapps') {
                 from(interlokWarDist)
@@ -504,7 +514,7 @@ def renameJarFile(filename, usedFileNames) {
             index++
         }
     }
-    
+
     return filename
 }
 
