@@ -460,14 +460,11 @@ distributions {
                 from(project.configurations.interlokRuntime)
                 from(serviceTesterDist)
                 eachFile {
+                    // this stops ththe same JAR being included with the suffix _1
                     if (!libs.add(it.sourceName)) {
                         it.exclude()
                     }
                 }
-            }
-            into('lib') {
-                from(serviceTesterDist)
-                filesNotMatching(project.configurations.interlokRuntime, null)
             }
             into('webapps') {
                 from(interlokWarDist)
