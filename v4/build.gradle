@@ -470,8 +470,16 @@ distributions {
                 from(localizeConfig)
             }
             into('lib') {
+                def libs = new HashSet()
                 from(project.configurations.interlokRuntime)
                 from(serviceTesterDist)
+                eachFile {
+                    // In dev mode, dependencies from serviceTesterDist may conflict
+                    // with interlokRuntime dependencies. This stops the same JAR being included with the suffix _1
+                    if (!libs.add(it.sourceName)) {
+                        it.exclude()
+                    }
+                }
             }
             into('webapps') {
                 from(interlokWarDist)
@@ -504,7 +512,7 @@ def renameJarFile(filename, usedFileNames) {
             index++
         }
     }
-    
+
     return filename
 }
 
