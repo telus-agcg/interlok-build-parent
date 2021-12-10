@@ -474,7 +474,8 @@ distributions {
                 from(project.configurations.interlokRuntime)
                 from(serviceTesterDist)
                 eachFile {
-                    // this stops ththe same JAR being included with the suffix _1
+                    // In dev mode, dependencies from serviceTesterDist may conflict
+                    // with interlokRuntime dependencies. This stops the same JAR being included with the suffix _1
                     if (!libs.add(it.sourceName)) {
                         it.exclude()
                     }
