@@ -21,7 +21,7 @@ ext {
   // Make interlokServiceTester an explicit version
   // If interlokVersion == SNAPSHOT then server-tester follows snapshot, otherwise it should
   // be pinned to it's own release.
-  interlokVersion = project.findProperty('interlokVersion') ?: '4.2.0-RELEASE'
+  interlokVersion = project.findProperty('interlokVersion') ?: '4.3.0-RELEASE'
   interlokServiceTesterVersion = project.findProperty('interlokServiceTesterVersion') ?: '4.2.1-RELEASE'
   interlokUiVersion = project.findProperty('interlokUiVersion') ?: interlokVersion
   verifyReportConfigCheckAvailable = '3.12-SNAPSHOT'
