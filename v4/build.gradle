@@ -16,7 +16,7 @@ apply plugin: "java-library"
 ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
-  log4j2Version='2.14.1'
+  log4j2Version='2.15.0'
   slf4jVersion='1.7.32'
   // Make interlokServiceTester an explicit version
   // If interlokVersion == SNAPSHOT then server-tester follows snapshot, otherwise it should
@@ -470,8 +470,16 @@ distributions {
                 from(localizeConfig)
             }
             into('lib') {
+                def libs = new HashSet()
                 from(project.configurations.interlokRuntime)
                 from(serviceTesterDist)
+                eachFile {
+                    // In dev mode, dependencies from serviceTesterDist may conflict
+                    // with interlokRuntime dependencies. This stops the same JAR being included with the suffix _1
+                    if (!libs.add(it.sourceName)) {
+                        it.exclude()
+                    }
+                }
             }
             into('webapps') {
                 from(interlokWarDist)
@@ -504,7 +512,7 @@ def renameJarFile(filename, usedFileNames) {
             index++
         }
     }
-    
+
     return filename
 }
 
