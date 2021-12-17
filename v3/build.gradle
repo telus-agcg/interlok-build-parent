@@ -16,7 +16,7 @@ apply plugin: "java-library"
 ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
-  log4j2Version='2.15.0'
+  log4j2Version='2.16.0'
   slf4jVersion='1.7.32'
   interlokVersion = project.findProperty('interlokVersion') ?: '3.12.0-RELEASE'
   verifyReportConfigCheckAvailable = '3.12-SNAPSHOT'
