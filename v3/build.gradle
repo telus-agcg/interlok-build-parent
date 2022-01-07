@@ -5,7 +5,7 @@ buildscript {
     maven { url 'https://plugins.gradle.org/m2/' }
   }
   dependencies {
-    classpath 'org.owasp:dependency-check-gradle:6.5.1'
+    classpath 'org.owasp:dependency-check-gradle:6.5.2.1'
   }
 }
 
@@ -19,6 +19,11 @@ ext {
   log4j2Version='2.17.1'
   slf4jVersion='1.7.32'
   interlokVersion = project.findProperty('interlokVersion') ?: '3.12.0-RELEASE'
+  // interlok-core is patched to 3.12.0.3-RELEASE
+  // Check the if statement in the dependencies block.
+  interlokCorePatchVersion = project.findProperty('interlokCorePatchVersion') ?: '3.12.0.3-RELEASE'
+  requiresCorePatchVersion = "3.12.0-RELEASE"
+
   verifyReportConfigCheckAvailable = '3.12-SNAPSHOT'
   interlokUiVersion = project.findProperty('interlokUiVersion') ?: interlokVersion
   interlokSourceConfig = "${projectDir}/src/main/interlok/config"
@@ -59,6 +64,10 @@ ext.buildDetails = [
 
   isIncludeWar: { ->
     return includeWar.equals("true") || buildEnv.equals("dev")
+  },
+
+  requiresCorePatch: { ->
+    return VersionNumber.parse( interlokVersion ) == VersionNumber.parse( requiresCorePatchVersion )
   }
 
 ]
@@ -179,12 +188,21 @@ repositories {
 }
 
 dependencies {
-  interlokRuntime ("com.adaptris:interlok-core:$interlokVersion") { changing= true}
-  interlokRuntime ("com.adaptris:interlok-common:$interlokVersion") { changing= true}
-  interlokRuntime ("com.adaptris:interlok-boot:$interlokVersion") { changing=true }
-  interlokRuntime ("com.adaptris:interlok-logging:$interlokVersion") { changing=true }
-  interlokRuntime ("com.adaptris:interlok-varsub:$interlokVersion") { changing=true }
 
+  // If our interlokVersion is set to anything other than 3.12.0-RELEASE then use that
+  // If it is set to 3.12.0-RELEASE then use 3.12.0.3-RELEASE version of Interlokv3.
+  if (interlokVersion.endsWith("SNAPSHOT") || !buildDetails.requiresCorePatch()) {
+    interlokRuntime ("com.adaptris:interlok-core:$interlokVersion") { changing= true}
+    interlokRuntime ("com.adaptris:interlok-common:$interlokVersion") { changing= true}
+    interlokRuntime ("com.adaptris:interlok-boot:$interlokVersion") { changing=true }
+    interlokRuntime ("com.adaptris:interlok-logging:$interlokVersion") { changing=true }
+  } else {
+    interlokRuntime ("com.adaptris:interlok-core:$interlokCorePatchVersion") { changing= true}
+    interlokRuntime ("com.adaptris:interlok-common:$interlokCorePatchVersion") { changing= true}
+    interlokRuntime ("com.adaptris:interlok-boot:$interlokCorePatchVersion") { changing=true }
+    interlokRuntime ("com.adaptris:interlok-logging:$interlokCorePatchVersion") { changing=true }
+  }
+  interlokRuntime ("com.adaptris:interlok-varsub:$interlokVersion") { changing=true }
   interlokRuntime ("org.slf4j:slf4j-api:$slf4jVersion")
   interlokRuntime ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
   interlokRuntime ("org.slf4j:jul-to-slf4j:$slf4jVersion")
@@ -210,6 +228,7 @@ dependencies {
   interlokVerify files("$interlokTmpConfigDirectory"){
       builtBy 'localizeConfig'
   }
+  // Javadocs aren't affected by interlokCorePatchVersion since they should just be bugfixes.
   interlokJavadocs group: "com.adaptris", name: "interlok-core", version: "$interlokVersion", classifier: "javadoc", changing: true, transitive: false
   interlokJavadocs group: "com.adaptris", name: "interlok-common", version: "$interlokVersion", classifier: "javadoc", changing: true, transitive: false
 
