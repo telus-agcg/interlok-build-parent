@@ -68,6 +68,9 @@ ext.buildDetails = [
   },
 
   hasServiceTesterPatch: { ->
+    if (interlokVersion.startsWith("latest.")) {
+      return false
+    }
     return VersionNumber.parse( interlokVersion ) == VersionNumber.parse( requiresServiceTesterPatch )
   }
 
@@ -76,6 +79,9 @@ ext.buildDetails = [
 ext.verifyReport = [
 
   verifyViaConfigCheck: { ->
+    if (interlokVersion.startsWith("latest.")) {
+      return true
+    }
     return VersionNumber.parse( interlokVersion ) >= VersionNumber.parse( verifyReportConfigCheckAvailable )
   },
 
@@ -279,6 +285,7 @@ def interlokVersionReport = tasks.register("interlokVersionReport", JavaExec) {
     workingDir = new File("${buildDir}/tmp")
     classpath = files(verifyLauncherJar.archivePath)
 
+    systemProperties System.properties
     mainClass = 'com.adaptris.core.management.SimpleBootstrap'
     args "-version"
 }
@@ -305,6 +312,8 @@ def interlokVerifyLog4j= tasks.register("interlokVerifyLog4j", JavaExec) {
   args "-configtest"
   environment loadPropertiesFromFile(interlokVerifyEnvironmentPropertiesFile)
   environment project.hasProperty('interlokVerifyEnvironmentProperties') ? project.getProperty('interlokVerifyEnvironmentProperties') : [:]
+  // Pass through system properties.
+  systemProperties System.properties
   systemProperties project.hasProperty('interlokVerifySystemProperties') ? project.getProperty('interlokVerifySystemProperties') : [:]
   systemProperties interlokVerifyLicenseProperties
   systemProperty "interlok.logging.url", verifyLog4j
@@ -336,6 +345,8 @@ def interlokVerifyConfigCheck= tasks.register("interlokVerifyConfigCheck", JavaE
   args "-configtest"
   environment loadPropertiesFromFile(interlokVerifyEnvironmentPropertiesFile)
   environment project.hasProperty('interlokVerifyEnvironmentProperties') ? project.getProperty('interlokVerifyEnvironmentProperties') : [:]
+  // Pass through system properties.
+  systemProperties System.properties
   systemProperties project.hasProperty('interlokVerifySystemProperties') ? project.getProperty('interlokVerifySystemProperties') : [:]
   systemProperties interlokVerifyLicenseProperties
   systemProperty "interlok.verify.warning.filename", interlokVerifyTextReport
