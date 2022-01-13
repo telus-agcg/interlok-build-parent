@@ -282,12 +282,23 @@ tasks.register("verifyLauncherJar", Jar) {
 def interlokVersionReport = tasks.register("interlokVersionReport", JavaExec) {
     group = 'Verification'
     description = 'Show Interlok versions using -version'
+    doFirst {
+      if(new File("$interlokTmpConfigDirectory/log4j2.xml").exists()) {
+        ant.move file: "$interlokTmpConfigDirectory/log4j2.xml", tofile: "$interlokTmpConfigDirectory/log4j2.xml.bk"
+      }
+    }
     workingDir = new File("${buildDir}/tmp")
     classpath = files(verifyLauncherJar.archivePath)
-
     systemProperties System.properties
+    systemProperty "interlok.logging.url", verifyLog4j
+
     mainClass = 'com.adaptris.core.management.SimpleBootstrap'
     args "-version"
+    doLast {
+      if(new File("$interlokTmpConfigDirectory/log4j2.xml.bk").exists()) {
+        ant.move file: "$interlokTmpConfigDirectory/log4j2.xml.bk", tofile: "$interlokTmpConfigDirectory/log4j2.xml"
+      }
+    }
 }
 
 interlokVersionReport.configure {
@@ -337,6 +348,9 @@ def interlokVerifyConfigCheck= tasks.register("interlokVerifyConfigCheck", JavaE
     verifyReport.verifyViaConfigCheck()
   }
   doFirst {
+    if(new File("$interlokTmpConfigDirectory/log4j2.xml").exists()) {
+      ant.move file: "$interlokTmpConfigDirectory/log4j2.xml", tofile: "$interlokTmpConfigDirectory/log4j2.xml.bk"
+    }
     verifyReport.init()
   }
   workingDir = new File("${buildDir}/tmp")
@@ -352,6 +366,12 @@ def interlokVerifyConfigCheck= tasks.register("interlokVerifyConfigCheck", JavaE
   systemProperty "interlok.verify.warning.filename", interlokVerifyTextReport
   systemProperty "interlok.verify.warning.category", interlokVerifyCategory
   systemProperty "interlok.verify.warning.level", interlokVerifyLevel
+  systemProperty "interlok.logging.url", verifyLog4j
+  doLast {
+    if(new File("$interlokTmpConfigDirectory/log4j2.xml.bk").exists()) {
+      ant.move file: "$interlokTmpConfigDirectory/log4j2.xml.bk", tofile: "$interlokTmpConfigDirectory/log4j2.xml"
+    }
+  }
 }
 
 
