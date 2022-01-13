@@ -352,6 +352,7 @@ def interlokVerifyConfigCheck= tasks.register("interlokVerifyConfigCheck", JavaE
   systemProperty "interlok.verify.warning.filename", interlokVerifyTextReport
   systemProperty "interlok.verify.warning.category", interlokVerifyCategory
   systemProperty "interlok.verify.warning.level", interlokVerifyLevel
+  systemProperty "interlok.logging.url", verifyLog4j
 }
 
 
