@@ -465,7 +465,7 @@ task interlokServiceTestReport {
       )
 
       ant.junitreport(todir: interlokServiceTestReportDir) {
-        fileset(dir: interlokServiceTestOutput, includes: 'TEST-*.xml')
+        fileset(dir: interlokServiceTestOutput, includes: '**/TEST-*.xml')
         report(todir: interlokServiceTestReportDir, format: "frames")
       }
     }
