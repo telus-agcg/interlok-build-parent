@@ -33,7 +33,13 @@ ext {
   interlokTmpWarDirectory = "${buildDir}/tmp/war"
   interlokTmpDocsDirectory = "${buildDir}/tmp/docs"
   interlokTmpServiceTestLog4j = "${buildDir}/tmp/serviceTestLog4j/log4j2.xml"
+
   interlokDistDirectory = project.findProperty('interlokDistDirectory') ?: "${buildDir}/distribution"
+
+  interlokServiceTestOutput = project.findProperty('interlokServiceTestOutput') ?: "${buildDir}/reports/unit"
+  interlokServiceTestReportDir = project.findProperty('interlokServiceTestReportDir') ?: "${buildDir}/reports/html"
+  interlokServiceTestDefinition = project.findProperty('interlokServiceTestDefinition') ?: "$projectDir/src/test/interlok/service-test.xml"
+
   buildEnv = project.findProperty('buildEnv') ?: 'NoBuildEnv'
   includeWar = project.findProperty('includeWar') ?: 'false'
   additionalTemplatedConfiguration = project.findProperty('additionalTemplatedConfiguration') ?: []
@@ -429,14 +435,14 @@ def interlokServiceTest = tasks.register("interlokServiceTest", JavaExec) {
     group = 'Test'
     description = 'Execute Interlok service tests'
     onlyIf {
-      new File("$projectDir/src/test/interlok/service-test.xml").exists()
+      new File(interlokServiceTestDefinition).exists()
     }
     mainClass = 'com.adaptris.tester.runners.TestExecutor'
     classpath = files(serviceTesterLauncherJar.archivePath)
     args "-serviceTest"
-    args "$projectDir/src/test/interlok/service-test.xml"
+    args interlokServiceTestDefinition
     args "-serviceTestOutput"
-    args "$buildDir/reports/unit/"
+    args interlokServiceTestOutput
 }
 
 interlokServiceTest.configure {
@@ -451,16 +457,16 @@ task interlokServiceTestReport {
       interlokServiceTest.get().didWork
     }
     doLast {
-      mkdir "$buildDir/reports/html"
+      mkdir interlokServiceTestReportDir
       ant.taskdef(
         name: 'junitreport',
         classname: 'org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator',
         classpath: configurations.antJunit.asPath
       )
 
-      ant.junitreport(todir: "$buildDir/reports/html") {
-        fileset(dir: "$buildDir/reports/unit", includes: 'TEST-*.xml')
-        report(todir: "$buildDir/reports/html", format: "frames")
+      ant.junitreport(todir: interlokServiceTestReportDir) {
+        fileset(dir: interlokServiceTestOutput, includes: 'TEST-*.xml')
+        report(todir: interlokServiceTestReportDir, format: "frames")
       }
     }
 }
