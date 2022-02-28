@@ -16,7 +16,7 @@ apply plugin: "java-library"
 ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
-  log4j2Version='2.17.1'
+  log4j2Version='2.17.2'
   slf4jVersion='1.7.36'
   // Make interlokServiceTester an explicit version
   // If interlokVersion == SNAPSHOT then server-tester follows snapshot, otherwise it should
