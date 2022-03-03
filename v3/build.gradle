@@ -5,7 +5,7 @@ buildscript {
     maven { url 'https://plugins.gradle.org/m2/' }
   }
   dependencies {
-    classpath 'org.owasp:dependency-check-gradle:6.5.2.1'
+    classpath 'org.owasp:dependency-check-gradle:6.5.3'
   }
 }
 
@@ -16,8 +16,8 @@ apply plugin: "java-library"
 ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
-  log4j2Version='2.17.1'
-  slf4jVersion='1.7.32'
+  log4j2Version='2.17.2'
+  slf4jVersion='1.7.36'
   interlokVersion = project.findProperty('interlokVersion') ?: '3.12.0-RELEASE'
   // interlok-core is patched to 3.12.0.3-RELEASE
   // Check the if statement in the dependencies block.
@@ -215,9 +215,9 @@ dependencies {
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
 
   interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.43.v20210629")
-  interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.18")
+  interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.19")
 
-  interlokRuntime ("org.apache.activemq:activemq-client:5.16.3") {
+  interlokRuntime ("org.apache.activemq:activemq-client:5.16.4") {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
   }
 

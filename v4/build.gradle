@@ -5,7 +5,7 @@ buildscript {
     maven { url 'https://plugins.gradle.org/m2/' }
   }
   dependencies {
-    classpath 'org.owasp:dependency-check-gradle:6.5.2.1'
+    classpath 'org.owasp:dependency-check-gradle:6.5.3'
   }
 }
 
@@ -16,12 +16,12 @@ apply plugin: "java-library"
 ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
-  log4j2Version='2.17.1'
-  slf4jVersion='1.7.32'
+  log4j2Version='2.17.2'
+  slf4jVersion='1.7.36'
   // Make interlokServiceTester an explicit version
   // If interlokVersion == SNAPSHOT then server-tester follows snapshot, otherwise it should
   // be pinned to it's own release.
-  interlokVersion = project.findProperty('interlokVersion') ?: '4.3.0-RELEASE'
+  interlokVersion = project.findProperty('interlokVersion') ?: '4.4.0-RELEASE'
   interlokServiceTesterVersion = project.findProperty('interlokServiceTesterVersion') ?: '4.2.1-RELEASE'
   interlokUiVersion = project.findProperty('interlokUiVersion') ?: interlokVersion
   verifyReportConfigCheckAvailable = '3.12-SNAPSHOT'
@@ -33,7 +33,13 @@ ext {
   interlokTmpWarDirectory = "${buildDir}/tmp/war"
   interlokTmpDocsDirectory = "${buildDir}/tmp/docs"
   interlokTmpServiceTestLog4j = "${buildDir}/tmp/serviceTestLog4j/log4j2.xml"
+
   interlokDistDirectory = project.findProperty('interlokDistDirectory') ?: "${buildDir}/distribution"
+
+  interlokServiceTestOutput = project.findProperty('interlokServiceTestOutput') ?: "${buildDir}/reports/unit"
+  interlokServiceTestReportDir = project.findProperty('interlokServiceTestReportDir') ?: "${buildDir}/reports/html"
+  interlokServiceTestDefinition = project.findProperty('interlokServiceTestDefinition') ?: "$projectDir/src/test/interlok/service-test.xml"
+
   buildEnv = project.findProperty('buildEnv') ?: 'NoBuildEnv'
   includeWar = project.findProperty('includeWar') ?: 'false'
   additionalTemplatedConfiguration = project.findProperty('additionalTemplatedConfiguration') ?: []
@@ -68,6 +74,9 @@ ext.buildDetails = [
   },
 
   hasServiceTesterPatch: { ->
+    if (interlokVersion.startsWith("latest.")) {
+      return false
+    }
     return VersionNumber.parse( interlokVersion ) == VersionNumber.parse( requiresServiceTesterPatch )
   }
 
@@ -76,6 +85,9 @@ ext.buildDetails = [
 ext.verifyReport = [
 
   verifyViaConfigCheck: { ->
+    if (interlokVersion.startsWith("latest.")) {
+      return true
+    }
     return VersionNumber.parse( interlokVersion ) >= VersionNumber.parse( verifyReportConfigCheckAvailable )
   },
 
@@ -206,7 +218,7 @@ dependencies {
   interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
   // CVE-2021-39139 (4.2-SNAPSHOT is already at 1.4.18)
-  interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.18")
+  interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.19")
 
   // The hasServiceTesterPatch() condition should become redundant for 4.3.0-RELEASE
   // since dependabot should auto-upgrade to 4.3.0-RELEASE for service tester as well.
@@ -276,11 +288,23 @@ tasks.register("verifyLauncherJar", Jar) {
 def interlokVersionReport = tasks.register("interlokVersionReport", JavaExec) {
     group = 'Verification'
     description = 'Show Interlok versions using -version'
+    doFirst {
+      if(new File("$interlokTmpConfigDirectory/log4j2.xml").exists()) {
+        ant.move file: "$interlokTmpConfigDirectory/log4j2.xml", tofile: "$interlokTmpConfigDirectory/log4j2.xml.bk"
+      }
+    }
     workingDir = new File("${buildDir}/tmp")
     classpath = files(verifyLauncherJar.archivePath)
+    systemProperties System.properties
+    systemProperty "interlok.logging.url", verifyLog4j
 
     mainClass = 'com.adaptris.core.management.SimpleBootstrap'
     args "-version"
+    doLast {
+      if(new File("$interlokTmpConfigDirectory/log4j2.xml.bk").exists()) {
+        ant.move file: "$interlokTmpConfigDirectory/log4j2.xml.bk", tofile: "$interlokTmpConfigDirectory/log4j2.xml"
+      }
+    }
 }
 
 interlokVersionReport.configure {
@@ -305,6 +329,8 @@ def interlokVerifyLog4j= tasks.register("interlokVerifyLog4j", JavaExec) {
   args "-configtest"
   environment loadPropertiesFromFile(interlokVerifyEnvironmentPropertiesFile)
   environment project.hasProperty('interlokVerifyEnvironmentProperties') ? project.getProperty('interlokVerifyEnvironmentProperties') : [:]
+  // Pass through system properties.
+  systemProperties System.properties
   systemProperties project.hasProperty('interlokVerifySystemProperties') ? project.getProperty('interlokVerifySystemProperties') : [:]
   systemProperties interlokVerifyLicenseProperties
   systemProperty "interlok.logging.url", verifyLog4j
@@ -328,6 +354,9 @@ def interlokVerifyConfigCheck= tasks.register("interlokVerifyConfigCheck", JavaE
     verifyReport.verifyViaConfigCheck()
   }
   doFirst {
+    if(new File("$interlokTmpConfigDirectory/log4j2.xml").exists()) {
+      ant.move file: "$interlokTmpConfigDirectory/log4j2.xml", tofile: "$interlokTmpConfigDirectory/log4j2.xml.bk"
+    }
     verifyReport.init()
   }
   workingDir = new File("${buildDir}/tmp")
@@ -336,11 +365,19 @@ def interlokVerifyConfigCheck= tasks.register("interlokVerifyConfigCheck", JavaE
   args "-configtest"
   environment loadPropertiesFromFile(interlokVerifyEnvironmentPropertiesFile)
   environment project.hasProperty('interlokVerifyEnvironmentProperties') ? project.getProperty('interlokVerifyEnvironmentProperties') : [:]
+  // Pass through system properties.
+  systemProperties System.properties
   systemProperties project.hasProperty('interlokVerifySystemProperties') ? project.getProperty('interlokVerifySystemProperties') : [:]
   systemProperties interlokVerifyLicenseProperties
   systemProperty "interlok.verify.warning.filename", interlokVerifyTextReport
   systemProperty "interlok.verify.warning.category", interlokVerifyCategory
   systemProperty "interlok.verify.warning.level", interlokVerifyLevel
+  systemProperty "interlok.logging.url", verifyLog4j
+  doLast {
+    if(new File("$interlokTmpConfigDirectory/log4j2.xml.bk").exists()) {
+      ant.move file: "$interlokTmpConfigDirectory/log4j2.xml.bk", tofile: "$interlokTmpConfigDirectory/log4j2.xml"
+    }
+  }
 }
 
 
@@ -398,14 +435,14 @@ def interlokServiceTest = tasks.register("interlokServiceTest", JavaExec) {
     group = 'Test'
     description = 'Execute Interlok service tests'
     onlyIf {
-      new File("$projectDir/src/test/interlok/service-test.xml").exists()
+      new File(interlokServiceTestDefinition).exists()
     }
     mainClass = 'com.adaptris.tester.runners.TestExecutor'
     classpath = files(serviceTesterLauncherJar.archivePath)
     args "-serviceTest"
-    args "$projectDir/src/test/interlok/service-test.xml"
+    args interlokServiceTestDefinition
     args "-serviceTestOutput"
-    args "$buildDir/reports/unit/"
+    args interlokServiceTestOutput
 }
 
 interlokServiceTest.configure {
@@ -420,16 +457,16 @@ task interlokServiceTestReport {
       interlokServiceTest.get().didWork
     }
     doLast {
-      mkdir "$buildDir/reports/html"
+      mkdir interlokServiceTestReportDir
       ant.taskdef(
         name: 'junitreport',
         classname: 'org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator',
         classpath: configurations.antJunit.asPath
       )
 
-      ant.junitreport(todir: "$buildDir/reports/html") {
-        fileset(dir: "$buildDir/reports/unit", includes: 'TEST-*.xml')
-        report(todir: "$buildDir/reports/html", format: "frames")
+      ant.junitreport(todir: interlokServiceTestReportDir) {
+        fileset(dir: interlokServiceTestOutput, includes: '**/TEST-*.xml')
+        report(todir: interlokServiceTestReportDir, format: "frames")
       }
     }
 }
