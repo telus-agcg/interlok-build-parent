@@ -18,14 +18,30 @@ ext {
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.17.2'
   slf4jVersion='1.7.36'
-  // Make interlokServiceTester an explicit version
-  // If interlokVersion == SNAPSHOT then server-tester follows snapshot, otherwise it should
-  // be pinned to it's own release.
+  // Make semi-required optional components have an explicit version
   interlokVersion = project.findProperty('interlokVersion') ?: '4.4.0-RELEASE'
-  interlokServiceTesterVersion = project.findProperty('interlokServiceTesterVersion') ?: '4.2.1-RELEASE'
+  interlokHelperVersion = project.findProperty('interlokVersion') ?: interlokVersion
+  interlokServiceTesterVersion = project.findProperty('interlokServiceTesterVersion') ?: interlokVersion
   interlokUiVersion = project.findProperty('interlokUiVersion') ?: interlokVersion
+
+  // Handles the situation where interlokVersion diverges from baseline versions of the other jars.
+  // e.g. 4.4.1-RELEASE interlok doesn't have a corresponding build of 4.4.1-varsub or 4.4.1-service-tester.
+  // key= interlokVersion
+  // value= the required var-sub version
+  interlokPatchVersionMap = [
+    "4.4.1-RELEASE" : "4.4.0-RELEASE"
+  ]
+  // key= interlokVersion
+  // value= the required service-tester-version
+  interlokServiceTesterPatchVersionMap = [
+    "4.2.0-RELEASE" : "4.2.1-RELEASE",
+    "4.4.1-RELEASE" : "4.4.0-RELEASE"
+  ]
+  interlokUiPatchVersionMap = [
+    "4.4.1-RELEASE" : "4.4.0-RELEASE"
+  ]
+
   verifyReportConfigCheckAvailable = '3.12-SNAPSHOT'
-  requiresServiceTesterPatch = "4.2.0-RELEASE"
 
   interlokSourceConfig = "${projectDir}/src/main/interlok/config"
   interlokTmpConfigDirectory = "${buildDir}/tmp/config"
@@ -71,15 +87,44 @@ ext.buildDetails = [
 
   isIncludeWar: { ->
     return includeWar.equals("true") || buildEnv.equals("dev")
-  },
-
-  hasServiceTesterPatch: { ->
-    if (interlokVersion.startsWith("latest.")) {
-      return false
-    }
-    return VersionNumber.parse( interlokVersion ) == VersionNumber.parse( requiresServiceTesterPatch )
   }
 
+]
+
+ext.interlokPatch = [
+  serviceTesterVersion: { ->
+    def computedVersion = interlokServiceTesterVersion
+    if (interlokServiceTesterVersion.equals(interlokVersion)) {
+      interlokServiceTesterPatchVersionMap.each { iv, pv ->
+        if (interlokVersion.equals(iv)) {
+          computedVersion=pv
+        }
+      }
+    }
+    return computedVersion
+  },
+  helperVersion: { ->
+    def computedVersion = interlokHelperVersion
+    if (interlokHelperVersion.equals(interlokVersion)) {
+      interlokPatchVersionMap.each { iv, pv ->
+        if (interlokVersion.equals(iv)) {
+          computedVersion= pv
+        }
+      }
+    }
+    return computedVersion
+  },
+  uiVersion: { ->
+    def computedVersion = interlokUiVersion
+    if (interlokUiVersion.equals(interlokVersion)) {
+      interlokUiPatchVersionMap.each { iv, pv ->
+        if (interlokVersion.equals(iv)) {
+          computedVersion= pv
+        }
+      }
+    }
+    return computedVersion
+  }
 ]
 
 ext.verifyReport = [
@@ -148,31 +193,31 @@ distTar.enabled=false
 distZip.enabled=false
 
 configurations {
-    interlokRuntime{}
-    interlokTestRuntime{}
-    interlokJavadocs{}
-    interlokVerify{}
-    interlokVerifyReport{}
-    interlokWar{}
-    antJunit{}
-    all*.exclude group: 'c3p0'
-    all*.exclude group: 'commons-logging'
-    all*.exclude group: 'javamail'
-    all*.exclude group: 'javax.mail', module: 'mail'
-    all*.exclude group: 'org.glassfish.hk2.external'
-    all*.exclude group: 'xalan', module: 'xalan'
-    all*.exclude group: 'net.sf.saxon', module: 'saxon'
-    // Exclude because com.fasterxml.woodstox:woodstox-core should take precedence
-    // however, stax2-api still lives on in the org.codehaus.woodstox group
-    all*.exclude group: 'org.codehaus.woodstox', module: 'woodstox-core-asl'
-    all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
-    all*.exclude group: 'javax.el', module: 'javax.el-api'
-    all*.exclude group: 'org.hibernate', module: 'hibernate-validator'
-    // INTERLOK-3197 exclude old javax.mail
-    all*.exclude group: 'com.sun.mail', module: 'javax.mail'
-    all*.exclude group: 'javax.validation', module: 'validation-api'
-    all*.exclude group: 'javax.activation', module: 'activation'
-    all*.exclude group: 'javax.activation', module: 'javax.activation-api'
+  interlokRuntime{}
+  interlokTestRuntime.extendsFrom interlokRuntime
+  interlokJavadocs{}
+  interlokVerify{}
+  interlokVerifyReport{}
+  interlokWar{}
+  antJunit{}
+  all*.exclude group: 'c3p0'
+  all*.exclude group: 'commons-logging'
+  all*.exclude group: 'javamail'
+  all*.exclude group: 'javax.mail', module: 'mail'
+  all*.exclude group: 'org.glassfish.hk2.external'
+  all*.exclude group: 'xalan', module: 'xalan'
+  all*.exclude group: 'net.sf.saxon', module: 'saxon'
+  // Exclude because com.fasterxml.woodstox:woodstox-core should take precedence
+  // however, stax2-api still lives on in the org.codehaus.woodstox group
+  all*.exclude group: 'org.codehaus.woodstox', module: 'woodstox-core-asl'
+  all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
+  all*.exclude group: 'javax.el', module: 'javax.el-api'
+  all*.exclude group: 'org.hibernate', module: 'hibernate-validator'
+  // INTERLOK-3197 exclude old javax.mail
+  all*.exclude group: 'com.sun.mail', module: 'javax.mail'
+  all*.exclude group: 'javax.validation', module: 'validation-api'
+  all*.exclude group: 'javax.activation', module: 'activation'
+  all*.exclude group: 'javax.activation', module: 'javax.activation-api'
 }
 
 
@@ -205,7 +250,7 @@ dependencies {
   interlokRuntime ("com.adaptris:interlok-common:$interlokVersion") { changing= true}
   interlokRuntime ("com.adaptris:interlok-boot:$interlokVersion") { changing=true }
   interlokRuntime ("com.adaptris:interlok-logging:$interlokVersion") { changing=true }
-  interlokRuntime ("com.adaptris:interlok-varsub:$interlokVersion") { changing=true }
+  interlokRuntime group: "com.adaptris", name: "interlok-varsub", version: interlokPatch.helperVersion(), changing: true
 
   interlokRuntime ("org.slf4j:slf4j-api:$slf4jVersion")
   interlokRuntime ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
@@ -220,18 +265,8 @@ dependencies {
   // CVE-2021-39139 (4.2-SNAPSHOT is already at 1.4.18)
   interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.19")
 
-  // The hasServiceTesterPatch() condition should become redundant for 4.3.0-RELEASE
-  // since dependabot should auto-upgrade to 4.3.0-RELEASE for service tester as well.
-  // Expectation is 4.1.0-RELEASE -> 4.1.0 for both interlok-core & service-tester
-  // 4.2.0-RELEASE -> interlok-core, service-tester=4.2.1-RELEASE
-  // 4.3-SNAPSHOT -> interlok-core + service-tester == 4.3-SNAPSHOT
-  if (interlokVersion.endsWith("SNAPSHOT") || !buildDetails.hasServiceTesterPatch()) {
-    interlokTestRuntime ("com.adaptris:interlok-service-tester:$interlokVersion") { changing=true }
-  } else {
-    interlokTestRuntime ("com.adaptris:interlok-service-tester:$interlokServiceTesterVersion") { changing=true }
-  }
-
-  interlokWar  ("com.adaptris.ui:interlok:$interlokUiVersion@war") {changing=true}
+  interlokTestRuntime group: "com.adaptris", name: "interlok-service-tester", version: interlokPatch.serviceTesterVersion(), changing: true
+  interlokWar group: "com.adaptris.ui", name: "interlok", version: interlokPatch.uiVersion(), changing: true, ext: "war"
 
   interlokVerify files("$interlokTmpConfigDirectory"){
       builtBy 'localizeConfig'
@@ -421,7 +456,7 @@ interlokVerifyLog4j.configure {
 tasks.register("serviceTesterLauncherJar", Jar) {
     appendix = "service-tester-launcher"
     ext.serviceTesterClasspath = { ->
-      def testerLibs = [configurations.interlokRuntime.collect { asFileUrl(it.getCanonicalPath()) }.join(' '),
+      def testerLibs = [
               configurations.interlokTestRuntime.collect { asFileUrl(it.getCanonicalPath()) }.join(' '),
               asFileUrl(new File(interlokTmpServiceTestLog4j).getParentFile().getCanonicalPath()) + "/"]
       return testerLibs.join(' ')
