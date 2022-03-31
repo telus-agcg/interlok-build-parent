@@ -510,10 +510,14 @@ def renameJarFile(filename, usedFileNames) {
       // hibernate-validator-6.1.7.Final.jar (and netty)
       "Final",
       // Jetty has jetty-continuation-9.4.45.v20220203.jar
-      "v[0-9]+",
+      'v[0-9]+',
       // opendmk_jmxremote_optional_jar-1.0-b01-ea.jar
       // javax.el-3.0.1-b12.jar
-      "b[0-9+].*"
+      '^[ab][0-9]+.*',
+      // org.apache.servicemix.bundles.jzlib-1.0.7_2.jar
+      '_[0-9]+',
+      //scalaz-stream_2.11-0.7.3a.jar
+      '^[ab]$'
     ]
     if (filename ==~ '(.*)\\.jar') {
         def basename=filename.replaceFirst('(.*)\\.jar', '$1')
