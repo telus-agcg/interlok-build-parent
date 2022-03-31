@@ -88,7 +88,6 @@ ext.buildDetails = [
   isIncludeWar: { ->
     return includeWar.equals("true") || buildEnv.equals("dev")
   }
-
 ]
 
 ext.interlokPatch = [
@@ -571,20 +570,39 @@ distributions {
 }
 
 def renameJarFile(filename, usedFileNames) {
+    def ignorableClassifiers = [
+      "RELEASE-javadoc", "SNAPSHOT-javadoc",
+      "javadoc", "RELEASE", "SNAPSHOT",
+      // hibernate-validator-6.1.7.Final.jar (and netty)
+      "Final",
+      // Jetty has jetty-continuation-9.4.45.v20220203.jar
+      "v[0-9]+",
+      // opendmk_jmxremote_optional_jar-1.0-b01-ea.jar
+      // javax.el-3.0.1-b12.jar
+      "b[0-9+].*"
+    ]
     if (filename ==~ '(.*)\\.jar') {
-        def name = filename.replaceFirst('(.*)-[0-9]+\\.(.*).jar', '$1')
-        def extension = 'jar'
+        def basename=filename.replaceFirst('(.*)\\.jar', '$1')
+        if (filename ==~ '(.*)-[0-9\\.]+(.*).jar') {
+          basename=filename.replaceFirst('(.*)-[0-9\\.]+(.*).jar', '$1')
+          def classifier=filename.replaceFirst('(.*)-[0-9\\.]+(.*).jar', '$2').replaceFirst('-', "")
+          ignorableClassifiers.each {
+            classifier=classifier.replaceFirst(it, "");
+          }
+          if (classifier?.trim()) {
+            basename=basename + "-" + classifier
+          }
+        }
         def isJavadoc = filename ==~ '(.*)-javadoc\\.jar'
-        filename = "${name}.${extension}"
+        filename = "${basename}.jar"
         def index = 1
         // At this point jars and javadoc jars can have the same name
         // so we differentiate them with the boolean 'isJavadoc'
-        while (!usedFileNames.add(filename + " " + isJavadoc)) {
-            filename = "${name}_${index}.${extension}"
+        while (!usedFileNames.add("$filename $isJavadoc")) {
+            filename = "${basename}_${index}.jar"
             index++
         }
     }
-
     return filename
 }
 
