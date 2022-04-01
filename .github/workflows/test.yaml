@@ -1,0 +1,42 @@
+name: Test
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+  schedule:
+    - cron: '15 01 * * SUN'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+       include:
+         - interlok-version: v3
+           java-version: 8
+         - interlok-version: v4
+           java-version: 11
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'adopt'
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: current
+    - name: Gradle Check
+      env:
+        JAVA_TOOL_OPTIONS: -Dpolyglot.js.nashorn-compat=true -Dpolyglot.engine.WarnInterpreterOnly=false
+        INTERLOK_PARENT_VERSION: ${{ matrix.interlok-version }}
+      run: |
+        cd ./test
+        gradle check
