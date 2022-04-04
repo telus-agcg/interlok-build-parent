@@ -1,0 +1,104 @@
+<adapter>
+  <unique-id>adapter</unique-id>
+  <start-up-event-imp>com.adaptris.core.event.StandardAdapterStartUpEvent</start-up-event-imp>
+  <heartbeat-event-imp>com.adaptris.core.HeartbeatEvent</heartbeat-event-imp>
+  <shared-components>
+    <connections/>
+    <services>
+      <add-metadata-service>
+        <unique-id>add-metadata</unique-id>
+        <metadata-element>
+          <key>key</key>
+          <value>value</value>
+        </metadata-element>
+      </add-metadata-service>
+    </services>
+  </shared-components>
+  <event-handler class="default-event-handler">
+    <unique-id>DefaultEventHandler</unique-id>
+    <connection class="null-connection">
+      <unique-id>elated-goldberg</unique-id>
+    </connection>
+    <producer class="null-message-producer">
+      <unique-id>eager-einstein</unique-id>
+    </producer>
+  </event-handler>
+  <message-error-handler class="null-processing-exception-handler">
+    <unique-id>hopeful-ride</unique-id>
+  </message-error-handler>
+  <failed-message-retrier class="no-retries">
+    <unique-id>gloomy-nobel</unique-id>
+  </failed-message-retrier>
+  <channel-list>
+    <channel>
+      <consume-connection class="jetty-embedded-connection">
+        <unique-id>jetty-connection</unique-id>
+      </consume-connection>
+      <produce-connection class="null-connection">
+        <unique-id>null-connection</unique-id>
+      </produce-connection>
+      <workflow-list>
+        <pooling-workflow>
+          <consumer class="jetty-message-consumer">
+            <unique-id>jetty-message-consumer</unique-id>
+            <path>/*</path>
+            <parameter-handler class="jetty-http-parameters-as-metadata"/>
+            <header-handler class="jetty-http-headers-as-metadata"/>
+          </consumer>
+          <service-collection class="service-list">
+            <unique-id>service-list</unique-id>
+            <services>
+              <logging-service>
+                <unique-id>log-message</unique-id>
+                <log-level>DEBUG</log-level>
+                <text>Message processing %message{%uniqueId}</text>
+              </logging-service>
+              <shared-service>
+                <unique-id>add-metadata</unique-id>
+                <lookup-name>add-metadata</lookup-name>
+              </shared-service>
+              <add-metadata-service>
+                <unique-id>add-values-from-property</unique-id>
+                <metadata-element>
+                  <key>key2</key>
+                  <value>${value2}</value>
+                </metadata-element>
+                <metadata-element>
+                  <key>key3</key>
+                  <value>${value3}</value>
+                </metadata-element>
+                <metadata-element>
+                  <key>key4</key>
+                  <value>${value4}</value>
+                </metadata-element>
+              </add-metadata-service>
+              <metadata-to-json-service>
+                <unique-id>set-payload</unique-id>
+                <metadata-filter class="regex-metadata-filter">
+                  <include-pattern>^key[0-9]?$</include-pattern>
+                </metadata-filter>
+              </metadata-to-json-service>
+            </services>
+          </service-collection>
+          <producer class="jetty-standard-response-producer">
+            <unique-id>send-http-response</unique-id>
+            <status-provider class="http-configured-status">
+              <status>OK_200</status>
+            </status-provider>
+            <response-header-provider class="jetty-no-response-headers"/>
+            <content-type-provider class="http-configured-content-type-provider">
+              <mime-type>text/plain</mime-type>
+            </content-type-provider>
+            <send-payload>true</send-payload>
+          </producer>
+          <unique-id>workflow</unique-id>
+        </pooling-workflow>
+      </workflow-list>
+      <unique-id>channel</unique-id>
+    </channel>
+  </channel-list>
+  <message-error-digester class="standard-message-error-digester">
+    <unique-id>ErrorDigest</unique-id>
+    <digest-max-size>100</digest-max-size>
+  </message-error-digester>
+</adapter>

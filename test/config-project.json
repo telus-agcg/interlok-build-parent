@@ -1,0 +1,19 @@
+{
+  "name" : "test",
+  "variableSets" : {
+    "local-env" : { }
+  },
+  "variableXpaths" : {
+    "/adapter/channel-list/channel[unique-id=\"channel\"]/workflow-list/pooling-workflow[unique-id=\"workflow\"]/service-collection/services/add-metadata-service[unique-id=\"add-values-from-property\"]/metadata-element[3]/value" : "${value4}",
+    "/adapter/channel-list/channel[unique-id=\"channel\"]/workflow-list/pooling-workflow[unique-id=\"workflow\"]/service-collection/services/add-metadata-service[unique-id=\"add-values-from-property\"]/metadata-element[2]/value" : "${value3}",
+    "/adapter/channel-list/channel[unique-id=\"channel\"]/workflow-list/pooling-workflow[unique-id=\"workflow\"]/service-collection/services/add-metadata-service[unique-id=\"add-values-from-property\"]/metadata-element[1]/value" : "${value2}"
+  },
+  "uidInXincludeCompntListFileName" : false,
+  "xincludeXpaths" : { },
+  "additionalFiles" : {
+    "bootstrap.properties" : "bootstrap.properties",
+    "log4j2.xml" : "log4j2.xml"
+  },
+  "optionalComponentsInUse" : [ "com.adaptris:interlok-json:4.4.0-RELEASE" ],
+  "structured" : true
+}
