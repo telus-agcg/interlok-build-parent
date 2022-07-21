@@ -1,0 +1,30 @@
+ext {
+
+  interlokParentVersion = System.env.containsKey("INTERLOK_PARENT_VERSION") ? "${System.env.INTERLOK_PARENT_VERSION}" : 'v4'
+
+  interlokParentBaseUrl = 'file:///' + project.projectDir.getParentFile().getAbsolutePath()
+  interlokParentGradle = interlokParentBaseUrl + '/' + interlokParentVersion + '/build.gradle'
+
+  buildEnv = project.hasProperty('buildEnv') ? project.getProperty('buildEnv') : 'env'
+
+  includeWar = 'true'
+
+  interlokVerifyEnvironmentProperties = [
+    "VALUE_IN_ENV" : "value3"
+  ]
+
+  interlokVerifySystemProperties = [
+    "valueSystemProperty" : "value4"
+  ]
+
+}
+
+allprojects {
+  apply from: "${interlokParentGradle}"
+}
+
+dependencies {
+  interlokRuntime ("com.adaptris:interlok-json:$interlokVersion")
+}
+
+installDist.dependsOn check

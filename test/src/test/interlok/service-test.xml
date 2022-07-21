@@ -1,0 +1,46 @@
+<service-test>
+  <unique-id>condescending-cori</unique-id>
+  <test-client class="embedded-jmx-test-client">
+    <shared-components>
+      <connections/>
+      <services/>
+    </shared-components>
+    <shared-components-provider>
+      <services/>
+    </shared-components-provider>
+  </test-client>
+  <helpers/>
+  <test-list>
+    <unique-id>test-list</unique-id>
+    <test>
+      <unique-id>test</unique-id>
+      <test-case>
+        <unique-id>test-case</unique-id>
+        <input-message-provider>
+          <metadata-provider class="empty-metadata-provider"/>
+          <payload-provider class="empty-payload-provider"/>
+        </input-message-provider>
+        <assertions>
+          <assert-metadata-contains>
+            <metadata>
+              <key-value-pair>
+                <key>key</key>
+                <value>value</value>
+              </key-value-pair>
+            </metadata>
+          </assert-metadata-contains>
+        </assertions>
+      </test-case>
+      <service-to-test>
+        <source class="default-config-file-source">
+          <file>file:///${service.tester.working.directory}/src/main/interlok/config/adapter.xml</file>
+        </source>
+        <preprocessors>
+          <service-unique-id-preprocessor>
+            <service>add-metadata</service>
+          </service-unique-id-preprocessor>
+        </preprocessors>
+      </service-to-test>
+    </test>
+  </test-list>
+</service-test>
