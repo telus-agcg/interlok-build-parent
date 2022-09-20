@@ -1,4 +1,4 @@
-name: Test
+name: OWASP SCA
 
 on:
   push:
@@ -7,6 +7,10 @@ on:
     branches: [ develop ]
   schedule:
     - cron: '15 03 * * SUN'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
