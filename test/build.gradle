@@ -7,7 +7,7 @@ ext {
 
   buildEnv = project.hasProperty('buildEnv') ? project.getProperty('buildEnv') : 'env'
 
-  includeWar = 'true'
+  // includeWar = 'true'
 
   interlokVerifyEnvironmentProperties = [
     "VALUE_IN_ENV" : "value3"
@@ -25,6 +25,12 @@ allprojects {
 
 dependencies {
   interlokRuntime ("com.adaptris:interlok-json:$interlokVersion")
+  interlokRuntime (platform("com.fasterxml.jackson:jackson-bom:2.13.4"))
+
+  interlokRuntime ("com.fasterxml.jackson.core:jackson-core")
+  interlokRuntime ("com.fasterxml.jackson.core:jackson-annotations")
+  interlokRuntime ("com.fasterxml.jackson.core:jackson-databind")
+  interlokRuntime ("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
 }
 
 installDist.dependsOn check
