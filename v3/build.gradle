@@ -218,7 +218,7 @@ dependencies {
   interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
 
-  interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.43.v20210629")
+  interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.49.v20220914")
   interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.19")
 
   interlokRuntime ("org.apache.activemq:activemq-client:5.16.5") {
