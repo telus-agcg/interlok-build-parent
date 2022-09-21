@@ -2,9 +2,19 @@ name: OWASP SCA
 
 on:
   push:
-    branches: [ develop ]
+    branches:
+      - develop
+    paths-ignore:
+      - "README.md"
+      - "serviceTestLog4j2.xml"
+      - "verifyLog4j2.xml"
   pull_request:
-    branches: [ develop ]
+    branches:
+      - develop
+    paths-ignore:
+      - "README.md"
+      - "serviceTestLog4j2.xml"
+      - "verifyLog4j2.xml"
   schedule:
     - cron: '15 03 * * SUN'
 
