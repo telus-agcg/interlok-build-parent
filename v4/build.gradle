@@ -217,6 +217,10 @@ configurations {
   all*.exclude group: 'javax.validation', module: 'validation-api'
   all*.exclude group: 'javax.activation', module: 'activation'
   all*.exclude group: 'javax.activation', module: 'javax.activation-api'
+  all*.exclude group: 'javax', module: 'javaee-api'
+  // Force explicit dependency on jakarta-jms api.
+  all*.exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+  all*.exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_1.1_spec'
 }
 
 
@@ -249,6 +253,7 @@ dependencies {
   interlokRuntime ("com.adaptris:interlok-common:$interlokVersion") { changing= true}
   interlokRuntime ("com.adaptris:interlok-boot:$interlokVersion") { changing=true }
   interlokRuntime ("com.adaptris:interlok-logging:$interlokVersion") { changing=true }
+  interlokRuntime ("com.adaptris:interlok-rest-health-check:$interlokVersion") { changing=true }
   interlokRuntime group: "com.adaptris", name: "interlok-varsub", version: interlokPatch.helperVersion(), changing: true
 
   interlokRuntime ("org.slf4j:slf4j-api:$slf4jVersion")
@@ -269,6 +274,17 @@ dependencies {
 
   // CVE-2022-2048
   interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.49.v20220914")
+
+  interlokRuntime ("jakarta.jms:jakarta.jms-api:2.0.3")
+  // snakeyaml 1.30 CVE-2022-25857, CVE-2022-38749, CVE-2022-38751, CVE-2022-38752, CVE-2022-38750
+  // We're end up with jackson as a transitive deps in almost all cases so this
+  // isn't a stretch.
+  interlokRuntime (platform("com.fasterxml.jackson:jackson-bom:2.13.4"))
+  interlokRuntime ("com.fasterxml.jackson.core:jackson-core")
+  interlokRuntime ("com.fasterxml.jackson.core:jackson-annotations")
+  interlokRuntime ("com.fasterxml.jackson.core:jackson-databind")
+  interlokRuntime ("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+
 
   interlokTestRuntime group: "com.adaptris", name: "interlok-service-tester", version: interlokPatch.serviceTesterVersion(), changing: true
   interlokWar group: "com.adaptris.ui", name: "interlok", version: interlokPatch.uiVersion(), changing: true, ext: "war"
