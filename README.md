@@ -1,3 +1,13 @@
+[![OWASP SCA](https://github.com/TelusAg/interlok-build-parent/actions/workflows/owasp.yaml/badge.svg)](https://github.com/TelusAg/interlok-build-parent/actions/workflows/owasp.yaml) [![Test](https://github.com/TelusAg/interlok-build-parent/actions/workflows/test.yaml/badge.svg)](https://github.com/TelusAg/interlok-build-parent/actions/workflows/test.yaml) ![license](https://img.shields.io/github/license/TelusAg/interlok-build-parent.svg)
+
+> This is forked from https://github.com/adaptris/interlok-build-parent and is customised for use by Telus Agriculture & Consumer Goods. That doesn't mean you can't you use it, but we will move on in slightly faster different ways because we intend to be in full control of the underlying Interlok version. Note that v3 will not be actively worked on, but we'll let dependabot do its thing.
+
+- `develop` is considered the trunk branch; `main` is considered the stable branch if you don't like change.
+- Tagging will match the baseline Interlok release (e.g. the next tag might be 4.6.0 to match the corresponding interlok release), 
+- We may introduce our own OWASP exclusion file based on our own attitude to those dependencies, but for now will rely mostly on the exclusion file made available in [interlok](https://github.com/adaptris/interlok/blob/develop/gradle/owasp-exclude.xml). 
+
+
+---
 # interlok-build-parent
 [![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok-build-parent.svg)](https://github.com/adaptris/interlok-build-parent/tags) ![license](https://img.shields.io/github/license/adaptris/interlok-build-parent.svg)
 
