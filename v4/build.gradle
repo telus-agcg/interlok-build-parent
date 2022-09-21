@@ -60,7 +60,7 @@ ext {
   includeWar = project.findProperty('includeWar') ?: 'false'
   additionalTemplatedConfiguration = project.findProperty('additionalTemplatedConfiguration') ?: []
   additionalTemplatedProperties = project.findProperty('additionalTemplatedProperties') ?: []
-  interlokParentBaseUrl = project.findProperty('interlokParentBaseUrl') ?: 'https://raw.githubusercontent.com/adaptris/interlok-build-parent/main'
+  interlokParentBaseUrl = project.findProperty('interlokParentBaseUrl') ?: 'https://raw.githubusercontent.com/TelusAg/interlok-build-parent/main'
   verifyLog4j = "${interlokParentBaseUrl}/verifyLog4j2.xml"
   serviceTestLog4j = "${interlokParentBaseUrl}/serviceTestLog4j2.xml"
   verifyMode  = project.hasProperty('verifyMode') ? VerifyModes.valueOf(project.getProperty('verifyMode')) : VerifyModes.WARN
