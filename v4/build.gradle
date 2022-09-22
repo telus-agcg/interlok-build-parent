@@ -335,7 +335,7 @@ tasks.register("verifyLauncherJar", Jar) {
               configurations.interlokVerify.collect { asFileUrl(it.getCanonicalPath()) + "/" }.join(' ')]
       return verifyLibs.join(' ')
     }
-    appendix = "verify-launcher"
+    archiveAppendix = "verify-launcher"
     manifest {
         attributes ("Class-Path": verifyLauncherClasspath())
     }
@@ -475,7 +475,7 @@ interlokVerifyLog4j.configure {
 }
 
 tasks.register("serviceTesterLauncherJar", Jar) {
-    appendix = "service-tester-launcher"
+    archiveAppendix = "service-tester-launcher"
     ext.serviceTesterClasspath = { ->
       def testerLibs = [
               configurations.interlokTestRuntime.collect { asFileUrl(it.getCanonicalPath()) }.join(' '),
