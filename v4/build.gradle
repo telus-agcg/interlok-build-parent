@@ -506,7 +506,7 @@ task interlokServiceTestReport {
     group = 'Test'
     description = 'Create Interlok service test reports'
     onlyIf{
-      interlokServiceTest.get().didWork
+      interlokServiceTest.get().didWork && new File(interlokServiceTestOutput).exists()
     }
     doLast {
       mkdir interlokServiceTestReportDir
