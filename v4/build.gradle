@@ -17,7 +17,7 @@ ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.19.0'
-  slf4jVersion='1.7.36'
+  slf4jVersion='2.0.3'
   // Make semi-required optional components have an explicit version
   interlokVersion = project.findProperty('interlokVersion') ?: '4.5.0-RELEASE'
   interlokHelperVersion = project.findProperty('interlokVersion') ?: interlokVersion
@@ -60,7 +60,7 @@ ext {
   includeWar = project.findProperty('includeWar') ?: 'false'
   additionalTemplatedConfiguration = project.findProperty('additionalTemplatedConfiguration') ?: []
   additionalTemplatedProperties = project.findProperty('additionalTemplatedProperties') ?: []
-  interlokParentBaseUrl = project.findProperty('interlokParentBaseUrl') ?: 'https://raw.githubusercontent.com/adaptris/interlok-build-parent/main'
+  interlokParentBaseUrl = project.findProperty('interlokParentBaseUrl') ?: 'https://raw.githubusercontent.com/TelusAg/interlok-build-parent/main'
   verifyLog4j = "${interlokParentBaseUrl}/verifyLog4j2.xml"
   serviceTestLog4j = "${interlokParentBaseUrl}/serviceTestLog4j2.xml"
   verifyMode  = project.hasProperty('verifyMode') ? VerifyModes.valueOf(project.getProperty('verifyMode')) : VerifyModes.WARN
@@ -217,6 +217,10 @@ configurations {
   all*.exclude group: 'javax.validation', module: 'validation-api'
   all*.exclude group: 'javax.activation', module: 'activation'
   all*.exclude group: 'javax.activation', module: 'javax.activation-api'
+  all*.exclude group: 'javax', module: 'javaee-api'
+  // Force explicit dependency on jakarta-jms api.
+  all*.exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+  all*.exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_1.1_spec'
 }
 
 
@@ -249,31 +253,17 @@ dependencies {
   interlokRuntime ("com.adaptris:interlok-common:$interlokVersion") { changing= true}
   interlokRuntime ("com.adaptris:interlok-boot:$interlokVersion") { changing=true }
   interlokRuntime ("com.adaptris:interlok-logging:$interlokVersion") { changing=true }
+  interlokRuntime ("com.adaptris:interlok-rest-health-check:$interlokVersion") { changing=true }
   interlokRuntime group: "com.adaptris", name: "interlok-varsub", version: interlokPatch.helperVersion(), changing: true
 
-  interlokRuntime ("org.slf4j:slf4j-api") {
-    version {
-      strictly "$slf4jVersion"
-      because "log4j-slf4j18-impl is not compatible with slf4j2.x until 2.19+"
-    }
-  }
-  interlokRuntime ("org.slf4j:jcl-over-slf4j:$slf4jVersion")  {
-    version {
-      strictly "$slf4jVersion"
-      because "log4j-slf4j18-impl is not compatible with slf4j2.x until 2.19+"
-    }
-  }
-  interlokRuntime ("org.slf4j:jul-to-slf4j:$slf4jVersion") {
-    version {
-      strictly "$slf4jVersion"
-      because "log4j-slf4j18-impl is not compatible with slf4j2.x 2.19+"
-    }
-  }
+  interlokRuntime ("org.slf4j:slf4j-api:$slf4jVersion")
+  interlokRuntime ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
+  interlokRuntime ("org.slf4j:jul-to-slf4j:$slf4jVersion")
 
   interlokRuntime (platform("org.apache.logging.log4j:log4j-bom:$log4j2Version"))
   interlokRuntime ("org.apache.logging.log4j:log4j-core")
   interlokRuntime ("org.apache.logging.log4j:log4j-1.2-api")
-  interlokRuntime ("org.apache.logging.log4j:log4j-slf4j-impl")
+  interlokRuntime ("org.apache.logging.log4j:log4j-slf4j2-impl")
   interlokRuntime ("org.apache.logging.log4j:log4j-api")
 
   interlokRuntime ("com.sun.mail:jakarta.mail:1.6.7")
@@ -281,6 +271,20 @@ dependencies {
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
   // CVE-2021-39139 (4.2-SNAPSHOT is already at 1.4.18)
   interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.19")
+
+  // CVE-2022-2048
+  interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.49.v20220914")
+
+  interlokRuntime ("jakarta.jms:jakarta.jms-api:2.0.3")
+  // snakeyaml 1.30 CVE-2022-25857, CVE-2022-38749, CVE-2022-38751, CVE-2022-38752, CVE-2022-38750
+  // We're end up with jackson as a transitive deps in almost all cases so this
+  // isn't a stretch.
+  interlokRuntime (platform("com.fasterxml.jackson:jackson-bom:2.13.4"))
+  interlokRuntime ("com.fasterxml.jackson.core:jackson-core")
+  interlokRuntime ("com.fasterxml.jackson.core:jackson-annotations")
+  interlokRuntime ("com.fasterxml.jackson.core:jackson-databind")
+  interlokRuntime ("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+
 
   interlokTestRuntime group: "com.adaptris", name: "interlok-service-tester", version: interlokPatch.serviceTesterVersion(), changing: true
   interlokWar group: "com.adaptris.ui", name: "interlok", version: interlokPatch.uiVersion(), changing: true, ext: "war"
@@ -331,7 +335,7 @@ tasks.register("verifyLauncherJar", Jar) {
               configurations.interlokVerify.collect { asFileUrl(it.getCanonicalPath()) + "/" }.join(' ')]
       return verifyLibs.join(' ')
     }
-    appendix = "verify-launcher"
+    archiveAppendix = "verify-launcher"
     manifest {
         attributes ("Class-Path": verifyLauncherClasspath())
     }
@@ -471,7 +475,7 @@ interlokVerifyLog4j.configure {
 }
 
 tasks.register("serviceTesterLauncherJar", Jar) {
-    appendix = "service-tester-launcher"
+    archiveAppendix = "service-tester-launcher"
     ext.serviceTesterClasspath = { ->
       def testerLibs = [
               configurations.interlokTestRuntime.collect { asFileUrl(it.getCanonicalPath()) }.join(' '),
