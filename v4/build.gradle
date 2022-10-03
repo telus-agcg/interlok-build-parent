@@ -17,7 +17,7 @@ ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.19.0'
-  slf4jVersion='1.7.36'
+  slf4jVersion='2.0.3'
   // Make semi-required optional components have an explicit version
   interlokVersion = project.findProperty('interlokVersion') ?: '4.5.0-RELEASE'
   interlokHelperVersion = project.findProperty('interlokVersion') ?: interlokVersion
@@ -251,29 +251,14 @@ dependencies {
   interlokRuntime ("com.adaptris:interlok-logging:$interlokVersion") { changing=true }
   interlokRuntime group: "com.adaptris", name: "interlok-varsub", version: interlokPatch.helperVersion(), changing: true
 
-  interlokRuntime ("org.slf4j:slf4j-api") {
-    version {
-      strictly "$slf4jVersion"
-      because "log4j-slf4j18-impl is not compatible with slf4j2.x until 2.19+"
-    }
-  }
-  interlokRuntime ("org.slf4j:jcl-over-slf4j:$slf4jVersion")  {
-    version {
-      strictly "$slf4jVersion"
-      because "log4j-slf4j18-impl is not compatible with slf4j2.x until 2.19+"
-    }
-  }
-  interlokRuntime ("org.slf4j:jul-to-slf4j:$slf4jVersion") {
-    version {
-      strictly "$slf4jVersion"
-      because "log4j-slf4j18-impl is not compatible with slf4j2.x 2.19+"
-    }
-  }
+  interlokRuntime ("org.slf4j:slf4j-api:$slf4jVersion")
+  interlokRuntime ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
+  interlokRuntime ("org.slf4j:jul-to-slf4j:$slf4jVersion")
 
   interlokRuntime (platform("org.apache.logging.log4j:log4j-bom:$log4j2Version"))
   interlokRuntime ("org.apache.logging.log4j:log4j-core")
   interlokRuntime ("org.apache.logging.log4j:log4j-1.2-api")
-  interlokRuntime ("org.apache.logging.log4j:log4j-slf4j-impl")
+  interlokRuntime ("org.apache.logging.log4j:log4j-slf4j2-impl")
   interlokRuntime ("org.apache.logging.log4j:log4j-api")
 
   interlokRuntime ("com.sun.mail:jakarta.mail:1.6.7")
