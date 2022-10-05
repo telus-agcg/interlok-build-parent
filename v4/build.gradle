@@ -653,7 +653,7 @@ task checkJavaVersion {
 }
 
 dependencyCheck  {
-  suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" ]
+  suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" , "https://raw.githubusercontent.com/TelusAg/interlok-build-parent/develop/owasp-exclude.xml"]
   scanConfigurations = buildDetails.isIncludeWar() ? [ "interlokWar", "interlokRuntime" ] : [ "interlokRuntime" ]
   failBuildOnCVSS = 7
   formats = [ "HTML", "JUNIT" ]

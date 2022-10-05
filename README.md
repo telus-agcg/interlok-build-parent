@@ -5,7 +5,8 @@
 - `develop` is considered the trunk branch; `main` is considered the stable branch if you don't like change.
 - `develop` will be merged into main intermittently; but we will mostly be referencing the develop branch.
 - If we tag then the tag will match the baseline Interlok release (e.g. the next tag might be 4.6.0 to match the corresponding interlok release).
-- We may introduce our own OWASP exclusion file based on our own attitude to those dependencies, but for now will rely mostly on the exclusion file made available in [the interlok project](https://github.com/adaptris/interlok/blob/develop/gradle/owasp-exclude.xml).
+- ~~We may introduce our own OWASP exclusion file based on our own attitude to those dependencies~~, but for now will rely mostly on the exclusion file made available in [the interlok project](https://github.com/adaptris/interlok/blob/develop/gradle/owasp-exclude.xml).
+  - There is now [an exclusion file](https://raw.githubusercontent.com/TelusAg/interlok-build-parent/develop/owasp-exclude.xml) used in addition to the default
 - v3/build.gradle will not be actively worked on since we aren't using it but we'll let dependabot do its thing and merge if the associated github action passes.
 - v4/build.gradle is actively being worked on and We will try to track the latest stable gradle release (right now gradle-7.5.1) with it as well.
 - We'll endeavour to be in a situation where we can sync with upstream, but we know that this might not always be possible.
