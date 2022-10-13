@@ -5,7 +5,7 @@ buildscript {
     maven { url 'https://plugins.gradle.org/m2/' }
   }
   dependencies {
-    classpath 'org.owasp:dependency-check-gradle:7.1.1'
+    classpath 'org.owasp:dependency-check-gradle:7.2.1'
   }
 }
 
@@ -16,8 +16,8 @@ apply plugin: "java-library"
 ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
-  log4j2Version='2.18.0'
-  slf4jVersion='1.7.36'
+  log4j2Version='2.19.0'
+  slf4jVersion='2.0.3'
   // Make semi-required optional components have an explicit version
   interlokVersion = project.findProperty('interlokVersion') ?: '4.5.0-RELEASE'
   interlokHelperVersion = project.findProperty('interlokVersion') ?: interlokVersion
@@ -254,10 +254,13 @@ dependencies {
   interlokRuntime ("org.slf4j:slf4j-api:$slf4jVersion")
   interlokRuntime ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
   interlokRuntime ("org.slf4j:jul-to-slf4j:$slf4jVersion")
-  interlokRuntime ("org.apache.logging.log4j:log4j-core:$log4j2Version")
-  interlokRuntime ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
-  interlokRuntime ("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
-  interlokRuntime ("org.apache.logging.log4j:log4j-api:$log4j2Version")
+
+  interlokRuntime (platform("org.apache.logging.log4j:log4j-bom:$log4j2Version"))
+  interlokRuntime ("org.apache.logging.log4j:log4j-core")
+  interlokRuntime ("org.apache.logging.log4j:log4j-1.2-api")
+  interlokRuntime ("org.apache.logging.log4j:log4j-slf4j2-impl")
+  interlokRuntime ("org.apache.logging.log4j:log4j-api")
+
   interlokRuntime ("com.sun.mail:jakarta.mail:1.6.7")
   interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
@@ -488,7 +491,7 @@ task interlokServiceTestReport {
     group = 'Test'
     description = 'Create Interlok service test reports'
     onlyIf{
-      interlokServiceTest.get().didWork
+      interlokServiceTest.get().didWork && new File(interlokServiceTestOutput).exists()
     }
     doLast {
       mkdir interlokServiceTestReportDir
