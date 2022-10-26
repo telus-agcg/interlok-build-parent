@@ -221,6 +221,10 @@ configurations {
   // Force explicit dependency on jakarta-jms api.
   all*.exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
   all*.exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_1.1_spec'
+
+  // jakarta-activation:jakarta.activation-api is transitive from xml-bind
+  // and jackson.
+  all*.exclude group: 'com.sun.activation', module: 'jakarta.activation'
 }
 
 
@@ -267,7 +271,10 @@ dependencies {
   interlokRuntime ("org.apache.logging.log4j:log4j-api")
 
   interlokRuntime ("com.sun.mail:jakarta.mail:1.6.7")
-  interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
+
+  // interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
+  interlokRuntime ("jakarta.activation:jakarta.activation-api:1.2.2")
+
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
   // CVE-2021-39139 (4.2-SNAPSHOT is already at 1.4.18)
   interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.19")
