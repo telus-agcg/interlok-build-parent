@@ -36,7 +36,7 @@ jobs:
     - name: Setup Ubuntu
       id: ubuntu-bootstrap
       run: |
-        echo "::set-output name=today::$(/bin/date -u "+%Y%m%d")"
+        echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
