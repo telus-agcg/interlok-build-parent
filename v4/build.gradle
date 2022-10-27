@@ -18,6 +18,7 @@ ext {
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.19.0'
   slf4jVersion='2.0.3'
+  javamailModuleRedirect='com.sun.mail:jakarta.mail:1.6.7'
   // Make semi-required optional components have an explicit version
   interlokVersion = project.findProperty('interlokVersion') ?: '4.5.0-RELEASE'
   interlokHelperVersion = project.findProperty('interlokVersion') ?: interlokVersion
@@ -199,32 +200,58 @@ configurations {
   interlokVerifyReport{}
   interlokWar{}
   antJunit{}
-  all*.exclude group: 'c3p0'
-  all*.exclude group: 'commons-logging'
-  all*.exclude group: 'javamail'
-  all*.exclude group: 'javax.mail', module: 'mail'
-  all*.exclude group: 'org.glassfish.hk2.external'
-  all*.exclude group: 'xalan', module: 'xalan'
-  all*.exclude group: 'net.sf.saxon', module: 'saxon'
+}
+
+configurations.all {
+  exclude group: 'c3p0'
+  exclude group: 'commons-logging'
+  exclude group: 'javamail'
+  exclude group: 'javax.mail', module: 'mail'
+  exclude group: 'org.glassfish.hk2.external'
+  exclude group: 'xalan', module: 'xalan'
+  exclude group: 'net.sf.saxon', module: 'saxon'
   // Exclude because com.fasterxml.woodstox:woodstox-core should take precedence
   // however, stax2-api still lives on in the org.codehaus.woodstox group
-  all*.exclude group: 'org.codehaus.woodstox', module: 'woodstox-core-asl'
-  all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
-  all*.exclude group: 'javax.el', module: 'javax.el-api'
-  all*.exclude group: 'org.hibernate', module: 'hibernate-validator'
+  exclude group: 'org.codehaus.woodstox', module: 'woodstox-core-asl'
+  exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
+  exclude group: 'javax.el', module: 'javax.el-api'
+  exclude group: 'org.hibernate', module: 'hibernate-validator'
   // INTERLOK-3197 exclude old javax.mail
-  all*.exclude group: 'com.sun.mail', module: 'javax.mail'
-  all*.exclude group: 'javax.validation', module: 'validation-api'
-  all*.exclude group: 'javax.activation', module: 'activation'
-  all*.exclude group: 'javax.activation', module: 'javax.activation-api'
-  all*.exclude group: 'javax', module: 'javaee-api'
-  // Force explicit dependency on jakarta-jms api.
-  all*.exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
-  all*.exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_1.1_spec'
+  exclude group: 'com.sun.mail', module: 'javax.mail'
+  exclude group: 'javax.validation', module: 'validation-api'
+  exclude group: 'javax.activation', module: 'activation'
+  exclude group: 'javax.activation', module: 'javax.activation-api'
+  exclude group: 'javax', module: 'javaee-api'
 
-  // jakarta-activation:jakarta.activation-api is transitive from xml-bind
-  // and jackson.
-  all*.exclude group: 'com.sun.activation', module: 'jakarta.activation'
+  resolutionStrategy.dependencySubstitution {
+    // jakarta-activation:jakarta.activation-api is transitive from xml-bind
+    // and jackson, which we substitute in favour of the com.sun variant since this
+    // won't try to optimistically upgrade to 2.0.1 which changes to jakarta.activation package name.
+    substitute module('jakarta.activation:jakarta.activation-api:1.2.2') using module('com.sun.activation:jakarta.activation:1.2.2')
+    substitute module('javax.activation:activation') using module('com.sun.activation:jakarta.activation:1.2.2')
+    substitute module('javax.activation:javax.activation-api') using module('com.sun.activation:jakarta.activation:1.2.2')
+
+    // Force explicit dependency on jakarta-jms api.
+    substitute module('org.apache.geronimo.specs:geronimo-jms_2.0_spec') using module('jakarta.jms:jakarta.jms-api:2.0.3')
+    substitute module('org.apache.geronimo.specs:geronimo-jms_1.1_spec') using module('jakarta.jms:jakarta.jms-api:2.0.3')
+    substitute module('javax:javaee-api') using module('jakarta.jms:jakarta.jms-api:2.0.3')
+    substitute module('javax.jms:jms:1.1') using module('jakarta.jms:jakarta.jms-api:2.0.3')
+
+    substitute module('javax.validation:validation-api') using module('jakarta.validation:jakarta.validation-api:2.0.2')
+    // switch to mwiede:jsch branch (should still be optimistically upgraded)
+    substitute module('com.jcraft:jsch') using module('com.github.mwiede:jsch:0.2.1')
+
+    // Redirect a bunch of javamail stuffs as well. This is the list from mvnrepository.com
+    substitute module('com.sun.mail:javax.mail') using module("$javamailModuleRedirect")
+    substitute module('javax.mail:mail') using module("$javamailModuleRedirect")
+    substitute module('javax.mail:mailapi') using module("$javamailModuleRedirect")
+    substitute module('javax.mail:javax.mail-api') using module("$javamailModuleRedirect")
+    substitute module('javax.mail:javax.mail') using module("$javamailModuleRedirect")
+    substitute module('javax.mail:pop3') using module("$javamailModuleRedirect")
+    substitute module('javax.mail:smtp') using module("$javamailModuleRedirect")
+    substitute module('javax.mail:dsn') using module("$javamailModuleRedirect")
+    substitute module('javax.mail:imap') using module("$javamailModuleRedirect")
+  }
 }
 
 
@@ -271,9 +298,6 @@ dependencies {
   interlokRuntime ("org.apache.logging.log4j:log4j-api")
 
   interlokRuntime ("com.sun.mail:jakarta.mail:1.6.7")
-
-  // interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
-  interlokRuntime ("jakarta.activation:jakarta.activation-api:1.2.2")
 
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
   // CVE-2021-39139 (4.2-SNAPSHOT is already at 1.4.18)
