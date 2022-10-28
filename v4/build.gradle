@@ -18,7 +18,11 @@ ext {
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.19.0'
   slf4jVersion='2.0.3'
-  javamailModuleRedirect='com.sun.mail:jakarta.mail:1.6.7'
+  jakartaJmsSubstitution='jakarta.jms:jakarta.jms-api:2.0.3'
+  jakartaActivationSubstitution='com.sun.activation:jakarta.activation:1.2.2'
+  jakartaMailSubstitution='com.sun.mail:jakarta.mail:1.6.7'
+  bouncyCastleSubsitutionVersion='1.72'
+
   // Make semi-required optional components have an explicit version
   interlokVersion = project.findProperty('interlokVersion') ?: '4.5.0-RELEASE'
   interlokHelperVersion = project.findProperty('interlokVersion') ?: interlokVersion
@@ -227,30 +231,42 @@ configurations.all {
     // jakarta-activation:jakarta.activation-api is transitive from xml-bind
     // and jackson, which we substitute in favour of the com.sun variant since this
     // won't try to optimistically upgrade to 2.0.1 which changes to jakarta.activation package name.
-    substitute module('jakarta.activation:jakarta.activation-api:1.2.2') using module('com.sun.activation:jakarta.activation:1.2.2')
-    substitute module('javax.activation:activation') using module('com.sun.activation:jakarta.activation:1.2.2')
-    substitute module('javax.activation:javax.activation-api') using module('com.sun.activation:jakarta.activation:1.2.2')
+    substitute module('jakarta.activation:jakarta.activation-api:1.2.2') using module("$jakartaActivationSubstitution")
+    substitute module('javax.activation:activation') using module("$jakartaActivationSubstitution")
+    substitute module('javax.activation:javax.activation-api') using module("$jakartaActivationSubstitution")
 
     // Force explicit dependency on jakarta-jms api.
-    substitute module('org.apache.geronimo.specs:geronimo-jms_2.0_spec') using module('jakarta.jms:jakarta.jms-api:2.0.3')
-    substitute module('org.apache.geronimo.specs:geronimo-jms_1.1_spec') using module('jakarta.jms:jakarta.jms-api:2.0.3')
-    substitute module('javax:javaee-api') using module('jakarta.jms:jakarta.jms-api:2.0.3')
-    substitute module('javax.jms:jms:1.1') using module('jakarta.jms:jakarta.jms-api:2.0.3')
+    substitute module('org.apache.geronimo.specs:geronimo-jms_2.0_spec') using module("$jakartaJmsSubstitution")
+    substitute module('org.apache.geronimo.specs:geronimo-jms_1.1_spec') using module("$jakartaJmsSubstitution")
+    substitute module('javax:javaee-api') using module("$jakartaJmsSubstitution")
+    substitute module('javax.jms:jms:1.1') using module("$jakartaJmsSubstitution")
 
     substitute module('javax.validation:validation-api') using module('jakarta.validation:jakarta.validation-api:2.0.2')
     // switch to mwiede:jsch branch (should still be optimistically upgraded)
     substitute module('com.jcraft:jsch') using module('com.github.mwiede:jsch:0.2.1')
 
     // Redirect a bunch of javamail stuffs as well. This is the list from mvnrepository.com
-    substitute module('com.sun.mail:javax.mail') using module("$javamailModuleRedirect")
-    substitute module('javax.mail:mail') using module("$javamailModuleRedirect")
-    substitute module('javax.mail:mailapi') using module("$javamailModuleRedirect")
-    substitute module('javax.mail:javax.mail-api') using module("$javamailModuleRedirect")
-    substitute module('javax.mail:javax.mail') using module("$javamailModuleRedirect")
-    substitute module('javax.mail:pop3') using module("$javamailModuleRedirect")
-    substitute module('javax.mail:smtp') using module("$javamailModuleRedirect")
-    substitute module('javax.mail:dsn') using module("$javamailModuleRedirect")
-    substitute module('javax.mail:imap') using module("$javamailModuleRedirect")
+    substitute module('com.sun.mail:javax.mail') using module("$jakartaMailSubstitution")
+    substitute module('javax.mail:mail') using module("$jakartaMailSubstitution")
+    substitute module('javax.mail:mailapi') using module("$jakartaMailSubstitution")
+    substitute module('javax.mail:javax.mail-api') using module("$jakartaMailSubstitution")
+    substitute module('javax.mail:javax.mail') using module("$jakartaMailSubstitution")
+    substitute module('javax.mail:pop3') using module("$jakartaMailSubstitution")
+    substitute module('javax.mail:smtp') using module("$jakartaMailSubstitution")
+    substitute module('javax.mail:dsn') using module("$jakartaMailSubstitution")
+    substitute module('javax.mail:imap') using module("$jakartaMailSubstitution")
+
+    // Redirect bouncy castle jdk15on to jdk18on
+    substitute module('org.bouncycastle:bcprov-jdk15on') using module("org.bouncycastle:bcprov-jdk18on:$bouncyCastleSubsitutionVersion")
+    substitute module('org.bouncycastle:bcprov-ext-jdk15on') using module("org.bouncycastle:bcprov-ext-jdk18on:$bouncyCastleSubsitutionVersion")
+    substitute module('org.bouncycastle:bcpkix-jdk15on') using module("org.bouncycastle:bcpkix-jdk18on:$bouncyCastleSubsitutionVersion")
+    substitute module('org.bouncycastle:bcmail-jdk15on') using module("org.bouncycastle:bcmail-jdk18on:$bouncyCastleSubsitutionVersion")
+    substitute module('org.bouncycastle:bcutil-jdk15on') using module("org.bouncycastle:bcutil-jdk18on:$bouncyCastleSubsitutionVersion")
+    substitute module('org.bouncycastle:bcpg-jdk15on') using module("org.bouncycastle:bcpg-jdk18on:$bouncyCastleSubsitutionVersion")
+    substitute module('org.bouncycastle:bcjmail-jdk15on') using module("org.bouncycastle:bcjmail-jdk18on:$bouncyCastleSubsitutionVersion")
+    substitute module('org.bouncycastle:bctls-jdk15on') using module("org.bouncycastle:bctls-jdk18on:$bouncyCastleSubsitutionVersion")
+
+    substitute module('org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec') using module("jakarta.management.j2ee:jakarta.management.j2ee-api:1.1.4")
   }
 }
 
@@ -297,18 +313,25 @@ dependencies {
   interlokRuntime ("org.apache.logging.log4j:log4j-slf4j2-impl")
   interlokRuntime ("org.apache.logging.log4j:log4j-api")
 
+  // Explicitly include our substitutions so that they can be optimistically upgraded
   interlokRuntime ("com.sun.mail:jakarta.mail:1.6.7")
-
+  interlokRuntime ("org.bouncycastle:bcprov-jdk18on:$bouncyCastleSubsitutionVersion")
+  interlokRuntime ("org.bouncycastle:bcpkix-jdk18on:$bouncyCastleSubsitutionVersion")
+  interlokRuntime ("org.bouncycastle:bcmail-jdk18on:$bouncyCastleSubsitutionVersion")
+  interlokRuntime ("jakarta.jms:jakarta.jms-api:2.0.3")
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
+  interlokRuntime ('com.sun.activation:jakarta.activation:1.2.2')
+  interlokRuntime ('jakarta.management.j2ee:jakarta.management.j2ee-api:1.1.4')
+
   // CVE-2021-39139 (4.2-SNAPSHOT is already at 1.4.18)
   interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.19")
 
-  // CVE-2022-2048
-  interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.49.v20220914")
+  // CVE-2022-2048 - use the bom to upgrade things we can.
+  interlokRuntime (platform("org.eclipse.jetty:jetty-bom:9.4.49.v20220914"))
+
   // CVE-2022-42889
   interlokRuntime ("org.apache.commons:commons-text:1.10.0")
 
-  interlokRuntime ("jakarta.jms:jakarta.jms-api:2.0.3")
   // snakeyaml 1.30 CVE-2022-25857, CVE-2022-38749, CVE-2022-38751, CVE-2022-38752, CVE-2022-38750
   // We're end up with jackson as a transitive deps in almost all cases so this
   // isn't a stretch.
