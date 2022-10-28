@@ -9,15 +9,11 @@ on:
 
 jobs:
   automerge:
-    runs-on: ubuntu-latest
     if: |
       ${{ github.actor == 'dependabot[bot]' }} &&
       github.event.workflow_run.conclusion == 'success'
-    steps:
-      - name: Run action
-        uses: ./.github/workflows/depbot-automerge.yml
-        with:
-          debug: 'true'
+    uses: ./.github/workflows/depbot-automerge.yml
+    # runs-on: ubuntu-latest
     # steps:
     #   - name: merge-if-built
     #     uses: ridedott/merge-me-action@v2
