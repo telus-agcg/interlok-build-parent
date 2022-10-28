@@ -12,11 +12,12 @@ jobs:
     steps:
     - name: debug
       uses: hmarr/debug-action@v2
-    - name: Verify Dependabot
-      if: ${{ (github.actor != 'dependabot[bot]') || (github.event_name != 'pull_request_target') }}
-      shell: bash
+    - name: check_workflow
+      if: |
+        github.event.workflow_run.conclusion != 'success' ||
+        github.actor != 'dependabot[bot]'
       run: |
-        echo "Fatal : ${{ github.actor }}:${{ github.event_name }}"
+        echo "${{ github.actor }} : workflow_run=${{ github.event.workflow_run.conclusion }}"
         exit 1
     - name: Fetch Dependabot Metadata
       id: metadata
@@ -24,9 +25,6 @@ jobs:
       with:
         github-token: ${{ github.token }}
         skip-commit-verification: true
-    - name: Debug Dependabot
-      run: |
-        echo "${{ toJSON(steps.metadata.outputs) }}"
     - name: Find associated PR
       uses: jwalton/gh-find-current-pr@v1.3.2
       id: findpr
@@ -34,17 +32,22 @@ jobs:
         github-token: ${{ github.token }}
         state: open
         sha: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
-    - name: Approve PR
-      shell: bash
-      if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+    - name: Debug Dependabot
       run: |
-        gh pr review --approve "${{ steps.findpr.outputs.pr }}"
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-    - name: Merge
-      shell: bash
-      if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
-      run: |
-        gh pr merge --auto --merge "${{ steps.findpr.outputs.pr }}"
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
+        echo "${{ toJSON(steps.metadata.outputs) }}"
+        echo "${{ toJSON(steps.findpr.outputs) }}"
+    # - name: Approve PR
+    #   shell: bash
+    #   if: |
+    #     steps.metadata.outputs.update-type == 'version-update:semver-patch'
+    #   run: |
+    #     gh pr review --approve "${{ steps.findpr.outputs.pr }}"
+    #   env:
+    #     GITHUB_TOKEN: ${{ github.token }}
+    # - name: Merge
+    #   shell: bash
+    #   if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+    #   run: |
+    #     gh pr merge --auto --merge "${{ steps.findpr.outputs.pr }}"
+    #   env:
+    #     GITHUB_TOKEN: ${{ github.token }}
