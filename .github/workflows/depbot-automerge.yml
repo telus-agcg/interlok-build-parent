@@ -14,14 +14,15 @@ jobs:
       uses: hmarr/debug-action@v2
     - name: check_workflow
       if: |
-        github.event.workflow_run.conclusion != 'success' ||
-        github.actor != 'dependabot[bot]'
+        github.event.workflow_run.conclusion != 'success'
       run: |
         echo "${{ github.actor }} : workflow_run=${{ github.event.workflow_run.conclusion }}"
         exit 1
     - name: Fetch Dependabot Metadata
       id: metadata
       uses: dependabot/fetch-metadata@v1
+      if: |
+        github.actor == 'dependabot[bot]'
       with:
         github-token: ${{ github.token }}
         skip-commit-verification: true
@@ -39,6 +40,7 @@ jobs:
     # - name: Approve PR
     #   shell: bash
     #   if: |
+    #     github.actor == 'dependabot[bot]' &&
     #     steps.metadata.outputs.update-type == 'version-update:semver-patch'
     #   run: |
     #     gh pr review --approve "${{ steps.findpr.outputs.pr }}"
@@ -46,7 +48,9 @@ jobs:
     #     GITHUB_TOKEN: ${{ github.token }}
     # - name: Merge
     #   shell: bash
-    #   if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+    #   if: |
+    #     github.actor == 'dependabot[bot]' &&
+    #     steps.metadata.outputs.update-type == 'version-update:semver-patch'
     #   run: |
     #     gh pr merge --auto --merge "${{ steps.findpr.outputs.pr }}"
     #   env:
