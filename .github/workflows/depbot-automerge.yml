@@ -35,18 +35,14 @@ jobs:
         sha: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
     - name: Approve PR
       shell: bash
-      if: |
-        steps.metadata.outputs.update-type == 'version-update:semver-patch' &&
-        steps.findpr.outputs.pr != ""
+      if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
       run: |
         gh pr review --approve "${{ steps.findpr.outputs.pr }}"
       env:
         GITHUB_TOKEN: ${{ github.token }}
     - name: Merge
       shell: bash
-      if: |
-        steps.metadata.outputs.update-type == 'version-update:semver-patch' &&
-        steps.findpr.outputs.pr != ""
+      if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
       run: |
         gh pr merge --auto --merge "${{ steps.findpr.outputs.pr }}"
       env:
