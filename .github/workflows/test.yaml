@@ -16,9 +16,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
        include:
@@ -26,7 +24,6 @@ jobs:
            java-version: 8
          - interlok-version: v4
            java-version: 11
-
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -47,3 +44,26 @@ jobs:
       run: |
         cd ./test
         gradle check
+
+  automerge:
+    needs: build
+    permissions:
+      contents: write
+      pull-requests: write
+    if: |
+      github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Find associated PR
+      uses: jwalton/gh-find-current-pr@v1.3.2
+      id: findpr
+      with:
+        github-token: ${{ github.token }}
+        state: open
+        sha: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
+    - name: merge-if-built
+      uses: fastify/github-action-merge-dependabot@v3
+      with:
+        pr-number: ${{ steps.findpr.outputs.pr }}
+        target: patch
+        approve-only: true
