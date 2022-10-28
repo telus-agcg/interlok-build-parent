@@ -1,0 +1,53 @@
+name: depbot-automerge
+
+on:
+  workflow_call:
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    - name: debug
+      uses: hmarr/debug-action@v2
+    - name: Verify Dependabot
+      if: ${{ (github.actor != 'dependabot[bot]') || (github.event_name != 'pull_request_target') }}
+      shell: bash
+      run: |
+        echo "Fatal : ${{ github.actor }}:${{ github.event_name }}"
+        exit 1
+    - name: Fetch Dependabot Metadata
+      id: metadata
+      uses: dependabot/fetch-metadata@v1.3.2
+      with:
+        github-token: ${{ github.token }}
+    - name: Debug Dependabot
+      run: |
+        echo "${{ toJSON(steps.metadata.outputs) }}"
+    - name: Find associated PR
+      uses: jwalton/gh-find-current-pr@v1.3.2
+      id: findpr
+      with:
+        github-token: ${{ github.token }}
+        state: open
+        sha: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
+    - name: Approve PR
+      shell: bash
+      if: |
+        steps.metadata.outputs.update-type == 'version-update:semver-patch' &&
+        steps.findpr.outputs.pr != ""
+      run: |
+        gh pr review --approve "${{ steps.findpr.outputs.pr }}"
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: Merge
+      shell: bash
+      if: |
+        steps.metadata.outputs.update-type == 'version-update:semver-patch' &&
+        steps.findpr.outputs.pr != ""
+      run: |
+        gh pr merge --auto --merge "${{ steps.findpr.outputs.pr }}"
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
