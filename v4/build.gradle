@@ -335,7 +335,7 @@ dependencies {
   // snakeyaml 1.30 CVE-2022-25857, CVE-2022-38749, CVE-2022-38751, CVE-2022-38752, CVE-2022-38750
   // We're end up with jackson as a transitive deps in almost all cases so this
   // isn't a stretch.
-  interlokRuntime (platform("com.fasterxml.jackson:jackson-bom:2.13.4.20221013"))
+  interlokRuntime (platform("com.fasterxml.jackson:jackson-bom:2.14.0"))
   interlokRuntime ("com.fasterxml.jackson.core:jackson-core")
   interlokRuntime ("com.fasterxml.jackson.core:jackson-annotations")
   interlokRuntime ("com.fasterxml.jackson.core:jackson-databind")
