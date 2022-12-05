@@ -332,6 +332,9 @@ dependencies {
   // CVE-2022-42889
   interlokRuntime ("org.apache.commons:commons-text:1.10.0")
 
+  // CVE-2021-37533
+  interlokRuntime ("commons-net:commons-net:3.9.0")
+
   // snakeyaml 1.30 CVE-2022-25857, CVE-2022-38749, CVE-2022-38751, CVE-2022-38752, CVE-2022-38750
   // We're end up with jackson as a transitive deps in almost all cases so this
   // isn't a stretch.
