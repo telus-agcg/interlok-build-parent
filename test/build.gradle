@@ -27,4 +27,6 @@ dependencies {
   interlokRuntime ("com.adaptris:interlok-json:$interlokVersion")
 }
 
+dependencyCheck.suppressionFiles.add("${rootDir}/../owasp-exclude.xml" )
+
 installDist.dependsOn check
