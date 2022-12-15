@@ -25,4 +25,14 @@
       <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
       <vulnerabilityName>CVE-2022-42003</vulnerabilityName>
    </suppress>
+   <suppress>
+      <notes><![CDATA[
+      file name: jettison-1.2.jar
+      XStream / JSON depends on jettison-1.2 and doesn't work with 1.3+
+      Not much we can do w/o patching the interlok project
+      ]]></notes>
+      <packageUrl regex="true">^pkg:maven/org\.codehaus\.jettison/jettison@.*$</packageUrl>
+      <vulnerabilityName>CVE-2022-45685</vulnerabilityName>
+      <vulnerabilityName>CVE-2022-45693</vulnerabilityName>
+   </suppress>
 </suppressions>
