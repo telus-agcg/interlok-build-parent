@@ -66,6 +66,7 @@ jobs:
       uses: dependabot/fetch-metadata@v1
     - name: merge-if-built
       uses: fastify/github-action-merge-dependabot@v3
+      continue-on-error: true
       if: ${{ steps.depbot-metadata.outputs.update-type }} == 'version-update:semver-patch'
       with:
         pr-number: ${{ steps.findpr.outputs.pr }}
