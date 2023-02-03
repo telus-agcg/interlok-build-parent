@@ -18,7 +18,7 @@ ext {
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.19.0'
   slf4jVersion='2.0.6'
-  jakartaJmsSubstitution='jakarta.jms:jakarta.jms-api:2.0.3'
+  jakartaJmsSubstitution='jakarta.jms:jakarta.jms-api:3.1.0'
   jakartaActivationSubstitution='com.sun.activation:jakarta.activation:1.2.2'
   jakartaMailSubstitution='com.sun.mail:jakarta.mail:1.6.7'
   bouncyCastleSubsitutionVersion='1.72'
