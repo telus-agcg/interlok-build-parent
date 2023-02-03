@@ -241,7 +241,7 @@ configurations.all {
     substitute module('javax:javaee-api') using module("$jakartaJmsSubstitution")
     substitute module('javax.jms:jms:1.1') using module("$jakartaJmsSubstitution")
 
-    substitute module('javax.validation:validation-api') using module('jakarta.validation:jakarta.validation-api:2.0.2')
+    substitute module('javax.validation:validation-api') using module('jakarta.validation:jakarta.validation-api:3.0.2')
     // switch to mwiede:jsch branch (should still be optimistically upgraded)
     substitute module('com.jcraft:jsch') using module('com.github.mwiede:jsch:0.2.7')
 
