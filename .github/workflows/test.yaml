@@ -2,17 +2,21 @@ name: Test
 
 on:
   push:
-    branches: [ develop ]
+    branches:
+      - develop
+    paths-ignore:
+      - "README.md"
   pull_request:
-    branches: [ develop ]
+    branches:
+      - develop
+    paths-ignore:
+      - "README.md"
   schedule:
     - cron: '15 01 * * SUN'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
        include:
@@ -20,7 +24,6 @@ jobs:
            java-version: 8
          - interlok-version: v4
            java-version: 11
-
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -28,11 +31,12 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: ${{ matrix.java-version }}
-        distribution: 'adopt'
+        distribution: 'temurin'
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
         gradle-version: current
+        gradle-home-cache-excludes: dependency-check-data
     - name: Gradle Check
       env:
         JAVA_TOOL_OPTIONS: -Dpolyglot.js.nashorn-compat=true -Dpolyglot.engine.WarnInterpreterOnly=false
@@ -40,3 +44,26 @@ jobs:
       run: |
         cd ./test
         gradle check
+
+  automerge:
+    needs: build
+    permissions:
+      contents: write
+      pull-requests: write
+    if: |
+      github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Find associated PR
+      uses: jwalton/gh-find-current-pr@v1
+      id: findpr
+      with:
+        github-token: ${{ github.token }}
+        state: open
+        sha: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
+    - name: merge-if-built
+      continue-on-error: true
+      uses: fastify/github-action-merge-dependabot@v3
+      with:
+        pr-number: ${{ steps.findpr.outputs.pr }}
+        target: patch

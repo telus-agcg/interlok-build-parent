@@ -1,0 +1,58 @@
+name: OWASP SCA
+
+on:
+  push:
+    branches:
+      - develop
+    paths-ignore:
+      - "README.md"
+      - "serviceTestLog4j2.xml"
+      - "verifyLog4j2.xml"
+  pull_request:
+    branches:
+      - develop
+    paths-ignore:
+      - "README.md"
+      - "serviceTestLog4j2.xml"
+      - "verifyLog4j2.xml"
+  schedule:
+    - cron: '15 03 * * SUN'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: 11
+        distribution: 'temurin'
+    - name: Setup Ubuntu
+      id: ubuntu-bootstrap
+      run: |
+        echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: current
+        gradle-home-cache-excludes: dependency-check-data
+    - name: OWASP dependency-check-data cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/dependency-check-data
+        key: ${{ runner.os }}-dependency-check-data-${{ steps.ubuntu-bootstrap.outputs.today }}
+        restore-keys: |
+          ${{ runner.os }}-dependency-check-data-
+    - name: Gradle Check
+      env:
+        JAVA_TOOL_OPTIONS: -Dpolyglot.js.nashorn-compat=true -Dpolyglot.engine.WarnInterpreterOnly=false
+        INTERLOK_PARENT_VERSION: v4
+      run: |
+        cd ./test
+        gradle dependencyCheckAnalyze

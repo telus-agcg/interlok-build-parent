@@ -7,7 +7,7 @@ ext {
 
   buildEnv = project.hasProperty('buildEnv') ? project.getProperty('buildEnv') : 'env'
 
-  includeWar = 'true'
+  // includeWar = 'true'
 
   interlokVerifyEnvironmentProperties = [
     "VALUE_IN_ENV" : "value3"
@@ -26,5 +26,7 @@ allprojects {
 dependencies {
   interlokRuntime ("com.adaptris:interlok-json:$interlokVersion")
 }
+
+dependencyCheck.suppressionFiles.add("${rootDir}/../owasp-exclude.xml" )
 
 installDist.dependsOn check

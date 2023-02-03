@@ -1,35 +1,39 @@
 version: 2
-registries:
-  interlok:
-    type: maven-repository
-    url: https://nexus.adaptris.net/nexus/content/groups/interlok
-    username: developer
-    password: ${{secrets.NEXUS_REPO_PASSWORD}}
 
 updates:
   - package-ecosystem: "gradle"
     directory: "/v4"
     open-pull-requests-limit: 20
-    registries:
-      - "interlok"
     schedule:
       interval: "daily"
     allow:
       - dependency-type: "all"
-    reviewers:
-      - aaron-mcgrath-adp
-      - sebastien-belin-adp
-      - higgyfella
+    commit-message:
+      prefix: "deps: "
   - package-ecosystem: "gradle"
     directory: "/v3"
     open-pull-requests-limit: 20
-    registries:
-      - "interlok"
     schedule:
       interval: "daily"
     allow:
       - dependency-type: "all"
-    reviewers:
-      - aaron-mcgrath-adp
-      - sebastien-belin-adp
-      - higgyfella
+    commit-message:
+      prefix: "deps: "
+  - package-ecosystem: "gradle"
+    directory: "/test"
+    open-pull-requests-limit: 20
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-type: "all"
+    commit-message:
+      prefix: "test: "
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    open-pull-requests-limit: 20
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-type: "all"
+    commit-message:
+      prefix: "ci(deps): "

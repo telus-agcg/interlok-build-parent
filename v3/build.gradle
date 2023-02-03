@@ -5,7 +5,7 @@ buildscript {
     maven { url 'https://plugins.gradle.org/m2/' }
   }
   dependencies {
-    classpath 'org.owasp:dependency-check-gradle:7.2.1'
+    classpath 'org.owasp:dependency-check-gradle:7.4.4'
   }
 }
 
@@ -17,7 +17,7 @@ ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.19.0'
-  slf4jVersion='2.0.3'
+  slf4jVersion='2.0.6'
   interlokVersion = project.findProperty('interlokVersion') ?: '3.12.0-RELEASE'
   // interlok-core is patched to 3.12.0.3-RELEASE
   // Check the if statement in the dependencies block.
@@ -206,7 +206,7 @@ dependencies {
 
   interlokRuntime ("org.slf4j:slf4j-api:$slf4jVersion")
   interlokRuntime ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
-  interlokRuntime ("org.slf4j:jul-to-slf4j:$slf4jVersion");
+  interlokRuntime ("org.slf4j:jul-to-slf4j:$slf4jVersion")
 
   interlokRuntime (platform("org.apache.logging.log4j:log4j-bom:$log4j2Version"))
   interlokRuntime ("org.apache.logging.log4j:log4j-core")
@@ -218,10 +218,13 @@ dependencies {
   interlokRuntime ("com.sun.activation:jakarta.activation:1.2.2")
   interlokRuntime ("jakarta.validation:jakarta.validation-api:2.0.2")
 
-  interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.43.v20210629")
-  interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.19")
-
-  interlokRuntime ("org.apache.activemq:activemq-client:5.16.4") {
+  interlokRuntime ("org.eclipse.jetty.aggregate:jetty-all:9.4.50.v20221201")
+  // CVE-2022-42889
+  interlokRuntime ("org.apache.commons:commons-text:1.10.0")
+  interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.20")
+  // CVE-2021-37533
+  interlokRuntime ("commons-net:commons-net:3.9.0")
+  interlokRuntime ("org.apache.activemq:activemq-client:5.16.5") {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
   }
 
@@ -238,7 +241,7 @@ dependencies {
 
   interlokVerifyReport("com.adaptris:interlok-verify-report:2.2.0")
 
-  antJunit ("org.apache.ant:ant-junit:1.10.12")
+  antJunit ("org.apache.ant:ant-junit:1.10.13")
 }
 
 task localizeConfig(type: Copy) {
@@ -276,7 +279,7 @@ tasks.register("verifyLauncherJar", Jar) {
               configurations.interlokVerify.collect { asFileUrl(it.getCanonicalPath()) + "/" }.join(' ')]
       return verifyLibs.join(' ')
     }
-    appendix = "verify-launcher"
+    archiveAppendix = "verify-launcher"
     manifest {
         attributes ("Class-Path": verifyLauncherClasspath())
     }
@@ -391,7 +394,7 @@ interlokVerifyLog4j.configure {
 }
 
 tasks.register("serviceTesterLauncherJar", Jar) {
-    appendix = "service-tester-launcher"
+    archiveAppendix = "service-tester-launcher"
     ext.serviceTesterClasspath = { ->
       def testerLibs = [configurations.interlokRuntime.collect { asFileUrl(it.getCanonicalPath()) }.join(' '),
               configurations.interlokTestRuntime.collect { asFileUrl(it.getCanonicalPath()) }.join(' '),
