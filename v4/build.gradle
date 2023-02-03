@@ -231,7 +231,7 @@ configurations.all {
     // jakarta-activation:jakarta.activation-api is transitive from xml-bind
     // and jackson, which we substitute in favour of the com.sun variant since this
     // won't try to optimistically upgrade to 2.0.1 which changes to jakarta.activation package name.
-    substitute module('jakarta.activation:jakarta.activation-api:1.2.2') using module("$jakartaActivationSubstitution")
+    substitute module('jakarta.activation:jakarta.activation-api:2.1.1') using module("$jakartaActivationSubstitution")
     substitute module('javax.activation:activation') using module("$jakartaActivationSubstitution")
     substitute module('javax.activation:javax.activation-api') using module("$jakartaActivationSubstitution")
 
