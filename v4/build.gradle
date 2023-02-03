@@ -327,7 +327,7 @@ dependencies {
   interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.20")
 
   // CVE-2022-2048 - use the bom to upgrade things we can.
-  interlokRuntime (platform("org.eclipse.jetty:jetty-bom:9.4.50.v20221201"))
+  interlokRuntime (platform("org.eclipse.jetty:jetty-bom:10.0.13"))
 
   // CVE-2022-42889
   interlokRuntime ("org.apache.commons:commons-text:1.10.0")
