@@ -65,7 +65,7 @@ ext {
   includeWar = project.findProperty('includeWar') ?: 'false'
   additionalTemplatedConfiguration = project.findProperty('additionalTemplatedConfiguration') ?: []
   additionalTemplatedProperties = project.findProperty('additionalTemplatedProperties') ?: []
-  interlokParentBaseUrl = project.findProperty('interlokParentBaseUrl') ?: 'https://raw.githubusercontent.com/TelusAg/interlok-build-parent/main'
+  interlokParentBaseUrl = project.findProperty('interlokParentBaseUrl') ?: 'https://raw.githubusercontent.com/telus-agcg/interlok-build-parent/main'
   verifyLog4j = "${interlokParentBaseUrl}/verifyLog4j2.xml"
   serviceTestLog4j = "${interlokParentBaseUrl}/serviceTestLog4j2.xml"
   verifyMode  = project.hasProperty('verifyMode') ? VerifyModes.valueOf(project.getProperty('verifyMode')) : VerifyModes.WARN
@@ -712,7 +712,7 @@ task checkJavaVersion {
 }
 
 dependencyCheck  {
-  suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" , "https://raw.githubusercontent.com/TelusAg/interlok-build-parent/develop/owasp-exclude.xml"]
+  suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" , "https://raw.githubusercontent.com/telus-agcg/interlok-build-parent/develop/owasp-exclude.xml"]
   scanConfigurations = buildDetails.isIncludeWar() ? [ "interlokWar", "interlokRuntime" ] : [ "interlokRuntime" ]
   failBuildOnCVSS = 7
   formats = [ "HTML", "JUNIT" ]
