@@ -83,4 +83,13 @@
       <cve>CVE-2022-3064</cve>
       <cve>CVE-2021-4235</cve>
    </suppress>
+   <suppress>
+      <notes><![CDATA[
+      file name: json-20220924.jar
+      CVS-2022-45688 refers to hutools-json which is not json-20220924.
+      ]]>
+      </notes>
+      <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
+      <vulnerabilityName>CVE-2022-45688</vulnerabilityName>
+   </suppress>
 </suppressions>
