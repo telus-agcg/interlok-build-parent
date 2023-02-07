@@ -50,8 +50,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    if: |
-      github.actor == 'dependabot[bot]'
+    if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
     - name: Find associated PR
@@ -63,11 +62,15 @@ jobs:
         sha: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
     - name: dependabot metadata
       id: depbot-metadata
+      if: github.actor == 'dependabot[bot]'
+      continue-on-error: true
       uses: dependabot/fetch-metadata@v1
     - name: merge-if-built
       uses: fastify/github-action-merge-dependabot@v3
       continue-on-error: true
-      if: ${{ steps.depbot-metadata.outputs.update-type }} == 'version-update:semver-patch'
+      if: |
+        ${{ steps.depbot-metadata.outputs.update-type }} == 'version-update:semver-patch' &&
+        github.actor == 'dependabot[bot]'
       with:
         pr-number: ${{ steps.findpr.outputs.pr }}
         target: patch
