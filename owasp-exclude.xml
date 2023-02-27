@@ -85,11 +85,28 @@
    </suppress>
    <suppress>
       <notes><![CDATA[
-      file name: json-20220924.jar
-      CVS-2022-45688 refers to hutools-json which is not json-20220924.
-      ]]>
-      </notes>
-      <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
-      <vulnerabilityName>CVE-2022-45688</vulnerabilityName>
+      file name: jackson-core-2.14.2.jar
+      Low confidence match for org.json:json leads to false positive
+      ]]></notes>
+      <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-core@.*$</packageUrl>
+      <cpe>cpe:/a:fasterxml:jackson-modules-java8</cpe>
+      <cpe>cpe:/a:json-java_project:json-java</cpe>
+   </suppress>
+   <suppress>
+      <notes><![CDATA[
+      file name: json-path-2.7.0.jar
+      Low confidence match for org.json:json leads to false positive
+      ]]></notes>
+      <packageUrl regex="true">^pkg:maven/com\.jayway\.jsonpath/json\-path@.*$</packageUrl>
+      <cpe>cpe:/a:json-java_project:json-java</cpe>
+   </suppress>
+   <suppress>
+      <notes><![CDATA[
+      file name: json-smart-2.4.7.jar
+      Low confidence match for org.json:json leads to false positive
+      ]]></notes>
+      <packageUrl regex="true">^pkg:maven/net\.minidev/json\-smart@.*$</packageUrl>
+      <cpe>cpe:/a:json-java_project:json-java</cpe>
+      <cpe>cpe:/a:ini-parser_project:ini-parser</cpe>
    </suppress>
 </suppressions>
