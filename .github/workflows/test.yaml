@@ -32,20 +32,17 @@ jobs:
       with:
         java-version: ${{ matrix.java-version }}
         distribution: 'temurin'
-    - name: Setup Gradle
+    - name: Execute Gradle build
       uses: gradle/gradle-build-action@v2
-      with:
-        gradle-version: current
-        gradle-home-cache-excludes: dependency-check-data
-    - name: Gradle Check
       env:
         JAVA_TOOL_OPTIONS: -Dpolyglot.js.nashorn-compat=true -Dpolyglot.engine.WarnInterpreterOnly=false
         INTERLOK_PARENT_VERSION: ${{ matrix.interlok-version }}
-      run: |
-        cd ./test
-        gradle check
+      with:
+        gradle-version: current
+        arguments: check
+        build-root-directory: test
 
-  automerge:
+  dependabot-merge:
     needs: build
     permissions:
       contents: write
@@ -60,12 +57,12 @@ jobs:
         github-token: ${{ github.token }}
         state: open
         sha: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
-    - name: dependabot metadata
+    - name: Grab Dependabot metadata
       id: depbot-metadata
       if: github.actor == 'dependabot[bot]'
       continue-on-error: true
       uses: dependabot/fetch-metadata@v1
-    - name: merge-if-built
+    - name: Merge Dependabot Patch updates
       uses: fastify/github-action-merge-dependabot@v3
       continue-on-error: true
       if: |
