@@ -21,6 +21,7 @@ ext {
   jakartaJmsSubstitution='jakarta.jms:jakarta.jms-api:2.0.3'
   jakartaActivationSubstitution='com.sun.activation:jakarta.activation:1.2.2'
   jakartaMailSubstitution='com.sun.mail:jakarta.mail:1.6.7'
+  jakartaExpressionSubstitution='org.glassfish:jakarta.el:3.0.4'
   bouncyCastleSubsitutionVersion='1.72'
 
   // Make semi-required optional components have an explicit version
@@ -234,6 +235,8 @@ configurations.all {
     substitute module('jakarta.activation:jakarta.activation-api:1.2.2') using module("$jakartaActivationSubstitution")
     substitute module('javax.activation:activation') using module("$jakartaActivationSubstitution")
     substitute module('javax.activation:javax.activation-api') using module("$jakartaActivationSubstitution")
+
+    substitute module('org.glassfish:javax.el') using module("$jakartaExpressionSubstitution")
 
     // Force explicit dependency on jakarta-jms api.
     substitute module('org.apache.geronimo.specs:geronimo-jms_2.0_spec') using module("$jakartaJmsSubstitution")
