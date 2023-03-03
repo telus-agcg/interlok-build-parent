@@ -47,9 +47,12 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: write
     if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout branch
+      uses: actions/checkout@v3
     - name: Find associated PR
       uses: jwalton/gh-find-current-pr@v1
       id: findpr
@@ -60,14 +63,22 @@ jobs:
     - name: Grab Dependabot metadata
       id: depbot-metadata
       if: github.actor == 'dependabot[bot]'
-      continue-on-error: true
       uses: dependabot/fetch-metadata@v1
-    - name: Merge Dependabot Patch updates
-      uses: fastify/github-action-merge-dependabot@v3
-      continue-on-error: true
+    - name: Check should merge
+      id: automerge
+      run: |
+        if [ "${{ steps.depbot-metadata.outputs.update-type }}" == "version-update:semver-patch" ]
+        then
+          echo "merge=yes" >> $GITHUB_OUTPUT
+        else
+          echo "merge=no" >> $GITHUB_OUTPUT
+        fi
+    - name: Merge dependabot patch updates
       if: |
-        ${{ steps.depbot-metadata.outputs.update-type }} == 'version-update:semver-patch' &&
-        github.actor == 'dependabot[bot]'
-      with:
-        pr-number: ${{ steps.findpr.outputs.pr }}
-        target: patch
+        steps.automerge.outputs.merge == 'yes' &&
+        steps.findpr.outputs.pr != ''
+      continue-on-error: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh pr merge -r --auto "${{ steps.findpr.outputs.pr }}"
