@@ -25,6 +25,11 @@ allprojects {
 
 dependencies {
   interlokRuntime ("com.adaptris:interlok-json:$interlokVersion")
+  if ("v4".equals(interlokParentVersion)) {
+    // transitive from json-path which we need to bump
+    interlokRuntime ("org.json:json:20230227")
+    interlokRuntime ("net.minidev:json-smart:2.4.10")
+  }
 }
 
 dependencyCheck.suppressionFiles.add("${rootDir}/../owasp-exclude.xml" )
