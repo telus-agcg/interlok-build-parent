@@ -223,7 +223,7 @@ dependencies {
   interlokRuntime ("org.apache.commons:commons-text:1.10.0")
   interlokRuntime ("com.thoughtworks.xstream:xstream:1.4.20")
   // CVE-2021-37533
-  interlokRuntime ("commons-net:commons-net:3.9.0")
+  interlokRuntime ("commons-net:commons-net:3.10.0")
   interlokRuntime ("org.apache.activemq:activemq-client:5.16.7") {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
   }
