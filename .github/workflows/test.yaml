@@ -63,7 +63,7 @@ jobs:
     - name: Grab Dependabot metadata
       id: depbot-metadata
       if: github.actor == 'dependabot[bot]'
-      uses: dependabot/fetch-metadata@v1
+      uses: dependabot/fetch-metadata@v2
     - name: Check should merge
       id: automerge
       run: |
