@@ -22,7 +22,7 @@ ext {
   jakartaActivationSubstitution='com.sun.activation:jakarta.activation:1.2.2'
   jakartaMailSubstitution='com.sun.mail:jakarta.mail:1.6.7'
   jakartaExpressionSubstitution='org.glassfish:jakarta.el:3.0.4'
-  bouncyCastleSubsitutionVersion='1.73'
+  bouncyCastleSubsitutionVersion='1.78'
 
   // Make semi-required optional components have an explicit version
   interlokVersion = project.findProperty('interlokVersion') ?: '4.7.0-RELEASE'
