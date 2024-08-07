@@ -17,7 +17,7 @@ ext {
   localInterlokRepo = project.findProperty('localInterlokRepo') ?: 'unknown'
   nexusBaseUrl  = 'https://nexus.adaptris.net'
   log4j2Version='2.20.0'
-  slf4jVersion='2.0.13'
+  slf4jVersion='2.0.14'
   jakartaJmsSubstitution='jakarta.jms:jakarta.jms-api:2.0.3'
   jakartaActivationSubstitution='com.sun.activation:jakarta.activation:1.2.2'
   jakartaMailSubstitution='com.sun.mail:jakarta.mail:1.6.7'
