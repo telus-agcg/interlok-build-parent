@@ -246,7 +246,7 @@ configurations.all {
 
     substitute module('javax.validation:validation-api') using module('jakarta.validation:jakarta.validation-api:2.0.2')
     // switch to mwiede:jsch branch (should still be optimistically upgraded)
-    substitute module('com.jcraft:jsch') using module('com.github.mwiede:jsch:0.2.19')
+    substitute module('com.jcraft:jsch') using module('com.github.mwiede:jsch:0.2.20')
 
     // Redirect a bunch of javamail stuffs as well. This is the list from mvnrepository.com
     substitute module('com.sun.mail:javax.mail') using module("$jakartaMailSubstitution")
