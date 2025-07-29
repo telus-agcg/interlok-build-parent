@@ -20,7 +20,7 @@ ext {
   slf4jVersion='2.0.17'
   jakartaJmsSubstitution='jakarta.jms:jakarta.jms-api:2.0.3'
   jakartaActivationSubstitution='com.sun.activation:jakarta.activation:1.2.2'
-  jakartaMailSubstitution='com.sun.mail:jakarta.mail:1.6.7'
+  jakartaMailSubstitution='com.sun.mail:jakarta.mail:1.6.8'
   jakartaExpressionSubstitution='org.glassfish:jakarta.el:3.0.4'
   bouncyCastleSubsitutionVersion='1.73'
 
@@ -317,7 +317,7 @@ dependencies {
   interlokRuntime ("org.apache.logging.log4j:log4j-api")
 
   // Explicitly include our substitutions so that they can be optimistically upgraded
-  interlokRuntime ("com.sun.mail:jakarta.mail:1.6.7")
+  interlokRuntime ("com.sun.mail:jakarta.mail:1.6.8")
   interlokRuntime ("org.bouncycastle:bcprov-jdk18on:$bouncyCastleSubsitutionVersion")
   interlokRuntime ("org.bouncycastle:bcpkix-jdk18on:$bouncyCastleSubsitutionVersion")
   interlokRuntime ("org.bouncycastle:bcmail-jdk18on:$bouncyCastleSubsitutionVersion")
