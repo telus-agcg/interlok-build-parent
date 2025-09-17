@@ -33,7 +33,7 @@ jobs:
         java-version: ${{ matrix.java-version }}
         distribution: 'temurin'
     - name: Execute Gradle build
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/gradle-build-action@v3
       env:
         JAVA_TOOL_OPTIONS: -Dpolyglot.js.nashorn-compat=true -Dpolyglot.engine.WarnInterpreterOnly=false
         INTERLOK_PARENT_VERSION: ${{ matrix.interlok-version }}
